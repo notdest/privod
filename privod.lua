@@ -57,10 +57,7 @@ isRun 	  = true
 			if row == 1 then
 
 				if col == 1 then
-					contango = contango + 1
-					SetCell(controlId, 2, 1, tostring(contango) )
-					printQuotes2()
-					clearTrades()
+					addContango(1)
 				elseif col == 3 then
 					setMiddle()
 				end
@@ -71,10 +68,7 @@ isRun 	  = true
 			elseif row == 3 then
 
 				if col == 1 then
-					contango = contango - 1
-					SetCell(controlId, 2, 1, tostring(contango) )
-					printQuotes2()
-					clearTrades()
+					addContango(-1)
 				end
 			end
 		end
@@ -83,19 +77,13 @@ isRun 	  = true
 			if row == 1 then
 
 				if col == 1 then
-					contango = contango + 10
-					SetCell(controlId, 2, 1, tostring(contango) )
-					printQuotes2()
-					clearTrades()
+					addContango(10)
 				end
 
 			elseif row == 3 then
 
 				if col == 1 then
-					contango = contango - 10
-					SetCell(controlId, 2, 1, tostring(contango) )
-					printQuotes2()
-					clearTrades()
+					addContango(-10)
 				end
 			end
 		end
@@ -116,6 +104,12 @@ isRun 	  = true
 		printQuotes2()
 	end
 
+	function addContango(step)
+		contango = contango + step
+		SetCell(controlId, 2, 1, tostring(contango) )
+		printQuotes2()
+		clearTrades()
+	end
 
 
 	function OnAllTrade( trade )															-- Прилетела обезличенная сделка

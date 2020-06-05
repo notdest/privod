@@ -1,5 +1,8 @@
 rowsCount	= 80	-- настройки таблицы с индикаторами
 
+futures		= {class = "SPBFUT", sec = "SRM0"}
+share		= {class = "TQBR"  , sec = "SBER"}
+
 controlId = nil		-- айдишники таблиц
 metricsId = nil
 
@@ -19,9 +22,9 @@ isRun 	  = true
 	end
 
 	function OnQuote(class, sec )
-		if     class =="SPBFUT" and sec == "SRM0" then
+		if     class == futures.class and sec == futures.sec then
 			printQuotes()
-		elseif class =="TQBR"   and sec == "SBER" then
+		elseif class == share.class   and sec == share.sec   then
 			printQuotes2()
 		end
 	end
@@ -106,7 +109,7 @@ isRun 	  = true
 
 
 	function setMiddle()
-		quotes = getQuoteLevel2 ( "SPBFUT" , "SRM0")
+		quotes = getQuoteLevel2 ( futures.class , futures.sec)
 		middle = math.ceil(  (quotes.offer[1].price + quotes.bid[ math.floor(quotes.bid_count) ].price )/2  )
 		clearTrades()
 		printQuotes()
@@ -116,7 +119,7 @@ isRun 	  = true
 
 
 	function OnAllTrade( trade )															-- ѕрилетела обезличенна€ сделка
-		if     trade.class_code == "SPBFUT" and trade.sec_code == "SRM0" then
+		if     trade.class_code == futures.class and trade.sec_code == futures.sec then
 			local index	= middle + math.floor(rowsCount/2) - trade.price
 
 			if index >= 1 and index <= rowsCount then
@@ -135,7 +138,7 @@ isRun 	  = true
 				end
 
 			end
-		elseif trade.class_code == "TQBR" and trade.sec_code == "SBER" then
+		elseif trade.class_code == share.class   and trade.sec_code == share.sec then
 			local index	= middle + math.floor(rowsCount/2) - math.floor( trade.price * 100) - contango
 
 			if index >= 1 and index <= rowsCount then
@@ -160,7 +163,7 @@ isRun 	  = true
 
 
 	function printQuotes()
-		quotes 			= getQuoteLevel2 ( "SPBFUT" , "SRM0")
+		quotes 			= getQuoteLevel2 ( futures.class , futures.sec)
 
 		endValue		= middle + math.floor(rowsCount/2)
 
@@ -197,7 +200,7 @@ isRun 	  = true
 
 
 	function printQuotes2()
-		quotes 			= getQuoteLevel2 ( "TQBR" , "SBER")
+		quotes 			= getQuoteLevel2 ( share.class , share.sec)
 		endValue		= middle + math.floor(rowsCount/2) - contango
 
 		

@@ -114,43 +114,29 @@ isRun 	  = true
 
 	function OnAllTrade( trade )															-- Прилетела обезличенная сделка
 		if     trade.class_code == futures.class and trade.sec_code == futures.sec then
-			local index	= middle + math.floor(rowsCount/2) - trade.price
-
-			if index >= 1 and index <= rowsCount then
-				local oldVal = GetCell(metricsId,index,1)
-
-				if oldVal.image == "" then
-					SetCell(metricsId,index,1,tostring(trade.qty))
-				else
-					SetCell(metricsId,index,1,tostring( tonumber(oldVal.image) + trade.qty))
-				end
-
-				if trade.flags == 1 then
-					Highlight(metricsId, index, 1, RGB(116, 41, 41), QTABLE_DEFAULT_COLOR , 200) 					-- продажа
-				else
-					Highlight(metricsId, index, 1, RGB(35, 74, 25), QTABLE_DEFAULT_COLOR , 200)
-				end
-
-			end
+			local row	= middle + math.floor(rowsCount/2) - trade.price
+			addTrade(trade,row,1)
 		elseif trade.class_code == share.class   and trade.sec_code == share.sec then
-			local index	= middle + math.floor(rowsCount/2) - math.floor( trade.price * 100) - contango
+			local row	= middle + math.floor(rowsCount/2 - trade.price * 100) - contango
+			addTrade(trade,row,5)
+		end
+	end
 
-			if index >= 1 and index <= rowsCount then
-				local oldVal = GetCell(metricsId,index,5)
+	function addTrade( trade,row,col )
+		if row >= 1 and row <= rowsCount then
+			local oldVal = GetCell(metricsId,row,col)
 
 				if oldVal.image == "" then
-					SetCell(metricsId,index,5,tostring(trade.qty))
+					SetCell(metricsId,row,col,tostring(trade.qty))
 				else
-					SetCell(metricsId,index,5,tostring( tonumber(oldVal.image) + trade.qty))
+					SetCell(metricsId,row,col,tostring( tonumber(oldVal.image) + trade.qty))
 				end
 
 				if trade.flags == 1 then
-					Highlight(metricsId, index, 5, RGB(116, 41, 41), QTABLE_DEFAULT_COLOR , 200) 					-- продажа
+					Highlight(metricsId, row, col, RGB(116, 41, 41), QTABLE_DEFAULT_COLOR , 200) 					-- продажа
 				else
-					Highlight(metricsId, index, 5, RGB(35, 74, 25), QTABLE_DEFAULT_COLOR , 200)
+					Highlight(metricsId, row, col, RGB(35, 74, 25), QTABLE_DEFAULT_COLOR , 200)
 				end
-
-			end
 		end
 	end
 

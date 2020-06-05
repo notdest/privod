@@ -196,21 +196,25 @@ isRun 	  = true
 		end
 
 
-		for k, v in pairs(quotes.bid) do
-			local index	= endValue - math.floor(v.price * 100)
-			if index <= rowsCount then
-				SetCell(metricsId, 	index, 6, tostring( v.quantity) )
-				SetColor(metricsId, index, 6, RGB(35, 74, 25), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-				SetColor(metricsId, index, 7, RGB(35, 74, 25), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+		if tonumber(quotes.bid_count) > 0 then
+			for k, v in pairs(quotes.bid) do
+				local index	= endValue - math.floor(v.price * 100)
+				if index <= rowsCount then
+					SetCell(metricsId, 	index, 6, tostring( v.quantity) )
+					SetColor(metricsId, index, 6, RGB(35, 74, 25), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+					SetColor(metricsId, index, 7, RGB(35, 74, 25), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+				end
 			end
 		end
 
-		for k, v in pairs(quotes.offer) do
-			index	= endValue - math.floor(v.price * 100)
-			if index >= 1 then
-				SetCell(metricsId, 	index, 8, tostring( v.quantity) )
-				SetColor(metricsId, index, 8, RGB(116, 41, 41), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-				SetColor(metricsId, index, 7, RGB(116, 41, 41), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+		if tonumber(quotes.offer_count) > 0 then
+			for k, v in pairs(quotes.offer) do
+				index	= endValue - math.floor(v.price * 100)
+				if index >= 1 then
+					SetCell(metricsId, 	index, 8, tostring( v.quantity) )
+					SetColor(metricsId, index, 8, RGB(116, 41, 41), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+					SetColor(metricsId, index, 7, RGB(116, 41, 41), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+				end
 			end
 		end
 	end

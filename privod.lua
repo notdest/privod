@@ -1,7 +1,24 @@
 rowsCount	= 80	-- настройки таблицы с индикаторами
 
-futures		= {class = "SPBFUT", sec = "SRM0"}
-share		= {class = "TQBR"  , sec = "SBER"}
+futures		= {	class 	= "SPBFUT",
+				sec 	= "SRM0",
+				volume 	= {
+					medium 	= 10,
+					high 	= 100
+				}
+}
+share		= {	class 	= "TQBR",
+				sec 	= "SBER",
+				volume 	= {
+					medium 	= 10,
+					high 	= 100
+				}
+}
+
+colors 	= {
+	green	= {light = RGB(29, 36, 27), medium = RGB(32, 54, 26), heavy = RGB(35, 74, 25) },
+	red		= {light = RGB(55, 31, 31), medium = RGB(76, 35, 35), heavy = RGB(116, 41, 41) }
+}
 
 controlId = nil		-- айдишники таблиц
 metricsId = nil
@@ -133,9 +150,9 @@ isRun 	  = true
 				end
 
 				if trade.flags == 1 then
-					Highlight(metricsId, row, col, RGB(116, 41, 41), QTABLE_DEFAULT_COLOR , 200) 					-- продажа
+					Highlight(metricsId, row, col, colors.red.heavy , QTABLE_DEFAULT_COLOR , 200)
 				else
-					Highlight(metricsId, row, col, RGB(35, 74, 25), QTABLE_DEFAULT_COLOR , 200)
+					Highlight(metricsId, row, col, colors.green.heavy, QTABLE_DEFAULT_COLOR , 200)
 				end
 		end
 	end
@@ -162,18 +179,34 @@ isRun 	  = true
 		for k, v in pairs(quotes.bid) do
 			local index	= endValue - v.price
 			if index <= rowsCount then
+
+					local color = colors.green.heavy
+					if tonumber(v.quantity) < futures.volume.medium then
+						color = colors.green.light
+					elseif tonumber(v.quantity) < futures.volume.high then
+						color = colors.green.medium
+					end
+
 				SetCell(metricsId, 	index, 2, tostring( v.quantity) )
-				SetColor(metricsId, index, 2, RGB(35, 74, 25), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-				SetColor(metricsId, index, 3, RGB(35, 74, 25), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+				SetColor(metricsId, index, 2, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+				SetColor(metricsId, index, 3, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 			end
 		end
 
 		for k, v in pairs(quotes.offer) do
 			index	= endValue - v.price
 			if index >= 1 then
+
+					local color = colors.red.heavy
+					if tonumber(v.quantity) < futures.volume.medium then
+						color = colors.red.light
+					elseif tonumber(v.quantity) < futures.volume.high then
+						color = colors.red.medium
+					end
+
 				SetCell(metricsId, 	index, 4, tostring( v.quantity) )
-				SetColor(metricsId, index, 4, RGB(116, 41, 41), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-				SetColor(metricsId, index, 3, RGB(116, 41, 41), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+				SetColor(metricsId, index, 4, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+				SetColor(metricsId, index, 3, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 			end
 		end
 	end
@@ -200,9 +233,17 @@ isRun 	  = true
 			for k, v in pairs(quotes.bid) do
 				local index	= endValue - math.floor(v.price * 100)
 				if index <= rowsCount then
+
+					local color = colors.green.heavy
+					if tonumber(v.quantity) < share.volume.medium then
+						color = colors.green.light
+					elseif tonumber(v.quantity) < share.volume.high then
+						color = colors.green.medium
+					end
+
 					SetCell(metricsId, 	index, 6, tostring( v.quantity) )
-					SetColor(metricsId, index, 6, RGB(35, 74, 25), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-					SetColor(metricsId, index, 7, RGB(35, 74, 25), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+					SetColor(metricsId, index, 6, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+					SetColor(metricsId, index, 7, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 				end
 			end
 		end
@@ -211,9 +252,17 @@ isRun 	  = true
 			for k, v in pairs(quotes.offer) do
 				index	= endValue - math.floor(v.price * 100)
 				if index >= 1 then
+
+					local color = colors.red.heavy
+					if tonumber(v.quantity) < share.volume.medium then
+						color = colors.red.light
+					elseif tonumber(v.quantity) < share.volume.high then
+						color = colors.red.medium
+					end
+
 					SetCell(metricsId, 	index, 8, tostring( v.quantity) )
-					SetColor(metricsId, index, 8, RGB(116, 41, 41), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-					SetColor(metricsId, index, 7, RGB(116, 41, 41), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+					SetColor(metricsId, index, 8, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+					SetColor(metricsId, index, 7, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 				end
 			end
 		end

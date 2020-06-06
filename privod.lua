@@ -274,7 +274,7 @@ isRun 	  = true
 		controlId = AllocTable()															-- Создаем таблицу с элементами управления
 		AddColumn(controlId, 1, "Контанго", true, QTABLE_CACHED_STRING_TYPE, 10)
 		AddColumn(controlId, 2, "число",  true, QTABLE_CACHED_STRING_TYPE, 10)
-		AddColumn(controlId, 3, "Удобства",   true, QTABLE_CACHED_STRING_TYPE, 10)
+		AddColumn(controlId, 3, "Удобства",   true, QTABLE_CACHED_STRING_TYPE, 17)
 		CreateWindow(controlId)
 
 
@@ -295,7 +295,6 @@ isRun 	  = true
 		SetTableNotificationCallback(controlId, controlCallback)
 
 
-
 		metricsId = AllocTable()															-- Создаем таблицу с стаканом
 		AddColumn(metricsId, 1, "Сделки",	true, QTABLE_INT_TYPE, 10)
 		AddColumn(metricsId, 2, "", 		true, QTABLE_INT_TYPE, 10)
@@ -314,6 +313,9 @@ isRun 	  = true
 
 		SetWindowCaption(metricsId, "Стаканы")
 		SetTableNotificationCallback(metricsId, metricsCallback)
+
+		SetWindowPos(controlId,367,550,270,141)
+		SetWindowPos(metricsId,749,0,564,893)
 
 		setMiddle()								-- Заполняем таблицу
 		printQuotes()

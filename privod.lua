@@ -10,8 +10,8 @@ futures		= {	class 	= "SPBFUT",
 share		= {	class 	= "TQBR",
 				sec 	= "SBER",
 				volume 	= {
-					medium 	= 10,
-					high 	= 100
+					medium 	= 100,
+					high 	= 1000
 				}
 }
 
@@ -317,8 +317,13 @@ isRun 	  = true
 		SetWindowPos(controlId,367,550,270,141)
 		SetWindowPos(metricsId,749,0,564,893)
 
+		local quotesF = getQuoteLevel2 ( futures.class , futures.sec)
+		local quotesS = getQuoteLevel2 ( share.class   , share.sec)
+		if tonumber(quotesF.offer_count) > 0 and tonumber(quotesS.offer_count) > 0 then
+			addContango( quotesF.offer[1].price - quotesS.offer[1].price*100)
+		end
+
 		setMiddle()								-- Заполняем таблицу
-		printQuotes()
 		
 		while isRun do
 			sleep(500)		-- Тут по умолчанию было 100 мс. Если не использовать задержки, то выжрет проц целиком. Но будет быстр

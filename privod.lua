@@ -1,5 +1,8 @@
 rowsCount	= 80	-- настройки таблицы с индикаторами
 
+updateInterval  = 300
+eraseInterval	= 15000
+
 futures		= {	class 	= "SPBFUT",
 				sec 	= "SRM0",
 				volume 	= {
@@ -325,7 +328,14 @@ isRun 	  = true
 
 		setMiddle()								-- Заполняем таблицу
 		
+		local lastErase = 0
 		while isRun do
-			sleep(500)		-- Тут по умолчанию было 100 мс. Если не использовать задержки, то выжрет проц целиком. Но будет быстр
+			if lastErase >= eraseInterval then
+				lastErase	= 0
+				clearTrades()
+			end
+
+			lastErase = lastErase + updateInterval
+			sleep(updateInterval)
 		end
 	end

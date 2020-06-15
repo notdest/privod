@@ -23,6 +23,13 @@ colors 	= {
 	red		= {light = RGB(55, 31, 31), medium = RGB(76, 35, 35), heavy = RGB(116, 41, 41) }
 }
 
+
+
+
+
+
+dofile (getScriptPath() .. "\\tradingFunctions.lua")
+
 controlId = nil		-- айдишники таблиц
 metricsId = nil
 
@@ -78,8 +85,14 @@ isRun 	  = true
 
 				if col == 1 then
 					addContango(1)
+				elseif col == 2 then
+					message(buyMarket( futures.class , futures.sec ,2))
 				elseif col == 3 then
 					setMiddle()
+				elseif col == 4 then
+					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
+					local price  = quotes.offer[1].price - 1
+					sellLimit(futures.class , futures.sec ,2, price)
 				end
 			elseif row == 2 then
 				if col == 3 then
@@ -89,6 +102,12 @@ isRun 	  = true
 
 				if col == 1 then
 					addContango(-1)
+				elseif col == 2 then
+					message(sellMarket( futures.class , futures.sec ,2))
+				elseif col == 4 then
+					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
+					local price  = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
+					buyLimit(futures.class , futures.sec ,2, price)
 				end
 			end
 		end
@@ -276,15 +295,16 @@ isRun 	  = true
 	function main()
 		controlId = AllocTable()															-- Создаем таблицу с элементами управления
 		AddColumn(controlId, 1, "Контанго", true, QTABLE_CACHED_STRING_TYPE, 10)
-		AddColumn(controlId, 2, "число",  true, QTABLE_CACHED_STRING_TYPE, 10)
-		AddColumn(controlId, 3, "Удобства",   true, QTABLE_CACHED_STRING_TYPE, 17)
+		AddColumn(controlId, 2, "Войти по рынку",  	true, QTABLE_CACHED_STRING_TYPE, 10)
+		AddColumn(controlId, 3, "Удобства",	true, QTABLE_CACHED_STRING_TYPE, 17)
+		AddColumn(controlId, 4, "Выйти",	true, QTABLE_CACHED_STRING_TYPE, 17)
 		CreateWindow(controlId)
 
 
 		data = {
-			{"+ (++ пкм)", "1", "Отцентровать"},
-			{"0", "1", "Очистить сделки"},
-			{"- (-- пкм)", "1", "1"}
+			{"+ (++ пкм)", 		"Вверх", 	"Отцентровать"		,"Сверху"},
+			{"0", 				"1", 		"Очистить сделки"	," "},
+			{"- (-- пкм)", 		"Вниз", 	"1"					,"Снизу"}
 		}
 
 		for k, v in pairs(data) do
@@ -292,6 +312,7 @@ isRun 	  = true
 			SetCell(controlId, row, 1, v[1])
 			SetCell(controlId, row, 2, v[2])
 			SetCell(controlId, row, 3, v[3])
+			SetCell(controlId, row, 4, v[4])
 		end
 
 		SetWindowCaption(controlId, "Управление")
@@ -317,7 +338,7 @@ isRun 	  = true
 		SetWindowCaption(metricsId, "Стаканы")
 		SetTableNotificationCallback(metricsId, metricsCallback)
 
-		SetWindowPos(controlId,367,550,270,141)
+		SetWindowPos(controlId,367,550,320,141)
 		SetWindowPos(metricsId,749,0,564,893)
 
 		local quotesF = getQuoteLevel2 ( futures.class , futures.sec)

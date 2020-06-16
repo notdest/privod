@@ -35,6 +35,7 @@ metricsId = nil
 
 middle	  = 0
 contango  = 0
+curPos	  = 0
 
 isRun 	  = true
 
@@ -76,6 +77,14 @@ isRun 	  = true
 		for i = 1, rowsCount do
 			SetCell(metricsId, i, 1, '' )
 			SetCell(metricsId, i, 5, '' )
+		end
+	end
+
+
+	function OnFuturesClientHolding( futPos)
+		if futPos.sec_code == futures.sec then
+			curPos = futPos.totalnet
+			SetCell(controlId, 2, 2, tostring(curPos) )
 		end
 	end
 
@@ -299,7 +308,7 @@ isRun 	  = true
 
 		data = {
 			{"+ (++ пкм)", 		"Вверх",	"Сверху", 	"Отцентровать"},
-			{"0", 				"1",		" ", 		"Очистить сделки"},
+			{"0", 				"0",		" ", 		"Очистить сделки"},
 			{"- (-- пкм)", 		"Вниз"		,"Снизу", 	"1"}
 		}
 
@@ -334,7 +343,7 @@ isRun 	  = true
 		SetWindowCaption(metricsId, "Стаканы")
 		SetTableNotificationCallback(metricsId, metricsCallback)
 
-		SetWindowPos(controlId,367,550,320,141)
+		SetWindowPos(controlId,367,550,380,141)
 		SetWindowPos(metricsId,749,0,564,893)
 
 		local quotesF = getQuoteLevel2 ( futures.class , futures.sec)

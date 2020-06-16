@@ -80,48 +80,44 @@ isRun 	  = true
 	end
 
 	function controlCallback(t_id, msg, row, col)											-- функция, которая обрабатывает таблицу управления
-		if msg == QTABLE_LBUTTONDOWN then
-			if row == 1 then
+		if     msg == QTABLE_LBUTTONDOWN then
 
-				if col == 1 then
+			if     col == 1 then
+				if     row == 1 then
 					addContango(1)
-				elseif col == 2 then
+				elseif row == 3 then
+					addContango(-1)
+				end
+			elseif col == 2 then
+				if     row == 1 then
 					message(buyMarket( futures.class , futures.sec ,2))
-				elseif col == 3 then
-					setMiddle()
-				elseif col == 4 then
+				elseif row == 3 then
+					message(sellMarket( futures.class , futures.sec ,2))
+				end
+			elseif col == 3 then
+				if     row == 1 then
 					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
 					local price  = quotes.offer[1].price - 1
 					sellLimit(futures.class , futures.sec ,2, price)
-				end
-			elseif row == 2 then
-				if col == 3 then
-					clearTrades()
-				end
-			elseif row == 3 then
-
-				if col == 1 then
-					addContango(-1)
-				elseif col == 2 then
-					message(sellMarket( futures.class , futures.sec ,2))
-				elseif col == 4 then
+				elseif row == 3 then
 					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
 					local price  = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
 					buyLimit(futures.class , futures.sec ,2, price)
 				end
-			end
-		end
-
-		if msg == QTABLE_RBUTTONDOWN then
-			if row == 1 then
-
-				if col == 1 then
-					addContango(10)
+			elseif col == 4 then
+				if     row == 1 then
+					setMiddle()
+				elseif row == 2 then
+					clearTrades()
 				end
+			end
 
-			elseif row == 3 then
 
-				if col == 1 then
+		elseif msg == QTABLE_RBUTTONDOWN then
+			if     col == 1 then
+				if     row == 1 then
+					addContango(10)
+				elseif row == 3 then
 					addContango(-10)
 				end
 			end
@@ -296,15 +292,15 @@ isRun 	  = true
 		controlId = AllocTable()															-- Создаем таблицу с элементами управления
 		AddColumn(controlId, 1, "Контанго", true, QTABLE_CACHED_STRING_TYPE, 10)
 		AddColumn(controlId, 2, "Войти по рынку",  	true, QTABLE_CACHED_STRING_TYPE, 10)
-		AddColumn(controlId, 3, "Удобства",	true, QTABLE_CACHED_STRING_TYPE, 17)
-		AddColumn(controlId, 4, "Выйти",	true, QTABLE_CACHED_STRING_TYPE, 17)
+		AddColumn(controlId, 3, "Выйти",	true, QTABLE_CACHED_STRING_TYPE, 17)
+		AddColumn(controlId, 4, "Удобства",	true, QTABLE_CACHED_STRING_TYPE, 17)
 		CreateWindow(controlId)
 
 
 		data = {
-			{"+ (++ пкм)", 		"Вверх", 	"Отцентровать"		,"Сверху"},
-			{"0", 				"1", 		"Очистить сделки"	," "},
-			{"- (-- пкм)", 		"Вниз", 	"1"					,"Снизу"}
+			{"+ (++ пкм)", 		"Вверх",	"Сверху", 	"Отцентровать"},
+			{"0", 				"1",		" ", 		"Очистить сделки"},
+			{"- (-- пкм)", 		"Вниз"		,"Снизу", 	"1"}
 		}
 
 		for k, v in pairs(data) do

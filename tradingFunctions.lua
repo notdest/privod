@@ -1,5 +1,5 @@
-tradingAccount	= "SPBFUT009HF"
-clientCode		= "SPBFUT00390/"
+tradingAccount	= "SPBFUT002T9"
+clientCode		= "SPBFUT002T9/"
 
 
 

@@ -55,7 +55,7 @@ end
 
 
 function buyLimit(class, sec, count, price)
-	transaction = {
+	local transaction = {
 		TRANS_ID				= "4",
 		CLASSCODE				= class,
 		ACTION					= "Ввод заявки",
@@ -77,7 +77,7 @@ end
 
 
 function sellLimit(class, sec, count, price)
-	transaction = {
+	local transaction = {
 		TRANS_ID				= "5",
 		CLASSCODE				= class,
 		ACTION					= "Ввод заявки",
@@ -92,6 +92,21 @@ function sellLimit(class, sec, count, price)
 		["Комментарий"]			= clientCode,
 		["Переносить заявку"]	= "Нет",
 		["Дата экспирации"]		= os.date("%Y%m%d")
+	}
+
+	return sendTransaction(transaction)
+end
+
+
+function dropLimit(class,assets)
+	local transaction = {
+		TRANS_ID				= "4",
+		CLASSCODE				= class,
+		ACTION					= "Удалить все заявки по условию",
+		["Торговый счет"]		= tradingAccount,
+		["Направленность"] 		= "Все",
+		["Тип заявки"]			= "Все",
+		["Базовый актив"]		= assets
 	}
 
 	return sendTransaction(transaction)

@@ -5,6 +5,7 @@ eraseInterval	= 15000
 
 futures		= {	class 	= "SPBFUT",
 				sec 	= "SRM0",
+				assets	= "SBRF",
 				volume 	= {
 					medium 	= 10,
 					high 	= 100
@@ -36,6 +37,8 @@ metricsId = nil
 middle	  		= 0
 contango  		= 0
 curPos	  		= 0
+openBuys		= 0
+openSells		= 0
 workingVolume	= 2
 
 isRun 	  = true
@@ -84,8 +87,12 @@ isRun 	  = true
 
 	function OnFuturesClientHolding( futPos)
 		if futPos.sec_code == futures.sec then
-			curPos = futPos.totalnet
+			curPos 		= futPos.totalnet
+			openBuys	= futPos.openbuys
+			openSells	= futPos.opensells
+
 			SetCell(controlId, 2, 3, tostring(curPos) )
+			SetCell(controlId, 2, 4, "+"..openBuys..", -"..openSells.." (снять)" )
 		end
 	end
 
@@ -116,6 +123,8 @@ isRun 	  = true
 					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
 					local price  = quotes.offer[1].price - 1
 					sellLimit(futures.class , futures.sec ,workingVolume, price)
+				elseif row == 2 then
+					dropLimit(futures.class,futures.assets)
 				elseif row == 3 then
 					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
 					local price  = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
@@ -353,7 +362,7 @@ isRun 	  = true
 		SetWindowCaption(metricsId, "Стаканы")
 		SetTableNotificationCallback(metricsId, metricsCallback)
 
-		SetWindowPos(controlId,367,550,380,141)
+		SetWindowPos(controlId,320,550,440,140)
 		SetWindowPos(metricsId,749,0,564,893)
 
 		local quotesF = getQuoteLevel2 ( futures.class , futures.sec)

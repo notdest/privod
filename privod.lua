@@ -33,9 +33,10 @@ dofile (getScriptPath() .. "\\tradingFunctions.lua")
 controlId = nil		-- айдишники таблиц
 metricsId = nil
 
-middle	  = 0
-contango  = 0
-curPos	  = 0
+middle	  		= 0
+contango  		= 0
+curPos	  		= 0
+workingVolume	= 2
 
 isRun 	  = true
 
@@ -84,7 +85,7 @@ isRun 	  = true
 	function OnFuturesClientHolding( futPos)
 		if futPos.sec_code == futures.sec then
 			curPos = futPos.totalnet
-			SetCell(controlId, 2, 2, tostring(curPos) )
+			SetCell(controlId, 2, 3, tostring(curPos) )
 		end
 	end
 
@@ -99,21 +100,28 @@ isRun 	  = true
 				end
 			elseif col == 2 then
 				if     row == 1 then
-					message(buyMarket( futures.class , futures.sec ,2))
+					workingVolume = workingVolume + 1
 				elseif row == 3 then
-					message(sellMarket( futures.class , futures.sec ,2))
+					workingVolume = workingVolume - 1
 				end
+				SetCell(controlId, 2, 2, tostring(workingVolume) )
 			elseif col == 3 then
+				if     row == 1 then
+					message(buyMarket( futures.class , futures.sec ,workingVolume))
+				elseif row == 3 then
+					message(sellMarket( futures.class , futures.sec ,workingVolume))
+				end
+			elseif col == 4 then
 				if     row == 1 then
 					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
 					local price  = quotes.offer[1].price - 1
-					sellLimit(futures.class , futures.sec ,2, price)
+					sellLimit(futures.class , futures.sec ,workingVolume, price)
 				elseif row == 3 then
 					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
 					local price  = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
-					buyLimit(futures.class , futures.sec ,2, price)
+					buyLimit(futures.class , futures.sec ,workingVolume, price)
 				end
-			elseif col == 4 then
+			elseif col == 5 then
 				if     row == 1 then
 					setMiddle()
 				elseif row == 2 then
@@ -300,16 +308,17 @@ isRun 	  = true
 	function main()
 		controlId = AllocTable()															-- Создаем таблицу с элементами управления
 		AddColumn(controlId, 1, "Контанго", true, QTABLE_CACHED_STRING_TYPE, 10)
-		AddColumn(controlId, 2, "Войти по рынку",  	true, QTABLE_CACHED_STRING_TYPE, 10)
-		AddColumn(controlId, 3, "Выйти",	true, QTABLE_CACHED_STRING_TYPE, 17)
-		AddColumn(controlId, 4, "Удобства",	true, QTABLE_CACHED_STRING_TYPE, 17)
+		AddColumn(controlId, 2, "Рабочий объем",  	true, QTABLE_CACHED_STRING_TYPE, 10)
+		AddColumn(controlId, 3, "Войти по рынку",  	true, QTABLE_CACHED_STRING_TYPE, 10)
+		AddColumn(controlId, 4, "Выйти",	true, QTABLE_CACHED_STRING_TYPE, 17)
+		AddColumn(controlId, 5, "Удобства",	true, QTABLE_CACHED_STRING_TYPE, 17)
 		CreateWindow(controlId)
 
 
 		data = {
-			{"+ (++ пкм)", 		"Вверх",	"Сверху", 	"Отцентровать"},
-			{"0", 				"0",		" ", 		"Очистить сделки"},
-			{"- (-- пкм)", 		"Вниз"		,"Снизу", 	"1"}
+			{"+ (++ пкм)", "Вверх", 				"Вверх",	"Сверху", 	"Отцентровать"},
+			{"0", 		   tostring(workingVolume), "0",		" ", 		"Очистить сделки"},
+			{"- (-- пкм)", "Вниз", 					"Вниз",		"Снизу", 	"1"}
 		}
 
 		for k, v in pairs(data) do
@@ -318,6 +327,7 @@ isRun 	  = true
 			SetCell(controlId, row, 2, v[2])
 			SetCell(controlId, row, 3, v[3])
 			SetCell(controlId, row, 4, v[4])
+			SetCell(controlId, row, 5, v[5])
 		end
 
 		SetWindowCaption(controlId, "Управление")

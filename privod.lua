@@ -4,7 +4,7 @@ updateInterval  = 300
 eraseInterval	= 15000
 
 futures		= {	class 	= "SPBFUT",
-				sec 	= "SRM0",
+				sec 	= "SRU0",
 				assets	= "SBRF",
 				volume 	= {
 					medium 	= 10,
@@ -105,6 +105,8 @@ isRun 	  = true
 				elseif row == 3 then
 					addContango(-1)
 				end
+
+
 			elseif col == 2 then
 				if     row == 1 then
 					workingVolume = workingVolume + 1
@@ -112,12 +114,16 @@ isRun 	  = true
 					workingVolume = workingVolume - 1
 				end
 				SetCell(controlId, 2, 2, tostring(workingVolume) )
+
+
 			elseif col == 3 then
 				if     row == 1 then
 					message(buyMarket( futures.class , futures.sec ,workingVolume))
 				elseif row == 3 then
 					message(sellMarket( futures.class , futures.sec ,workingVolume))
 				end
+
+
 			elseif col == 4 then
 				if     row == 1 then
 					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
@@ -130,7 +136,28 @@ isRun 	  = true
 					local price  = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
 					buyLimit(futures.class , futures.sec ,workingVolume, price)
 				end
+
+
 			elseif col == 5 then
+				local quotes = getQuoteLevel2 ( futures.class , futures.sec)
+				if     row == 1 then
+					local price, stopPrice = calculateStopUp( quotes )
+					buyStop(futures.class , futures.sec, math.abs(curPos), price, stopPrice)
+				elseif row == 3 then
+					local price, stopPrice = calculateStopDown( quotes )
+					sellStop(futures.class , futures.sec, math.abs(curPos), price, stopPrice)
+				end
+
+
+			elseif col == 6 then
+				if     row == 1 then
+					message("Вверх")
+				elseif row == 3 then
+					message("Вниз")
+				end
+
+
+			elseif col == 7 then
 				if     row == 1 then
 					setMiddle()
 				elseif row == 2 then
@@ -316,18 +343,20 @@ isRun 	  = true
 
 	function main()
 		controlId = AllocTable()															-- Создаем таблицу с элементами управления
-		AddColumn(controlId, 1, "Контанго", true, QTABLE_CACHED_STRING_TYPE, 10)
-		AddColumn(controlId, 2, "Рабочий объем",  	true, QTABLE_CACHED_STRING_TYPE, 10)
-		AddColumn(controlId, 3, "Войти по рынку",  	true, QTABLE_CACHED_STRING_TYPE, 10)
-		AddColumn(controlId, 4, "Выйти",	true, QTABLE_CACHED_STRING_TYPE, 17)
-		AddColumn(controlId, 5, "Удобства",	true, QTABLE_CACHED_STRING_TYPE, 17)
+		AddColumn(controlId, 1, "Контанго", 		true, QTABLE_CACHED_STRING_TYPE, 12)
+		AddColumn(controlId, 2, "Рабочий объем",  	true, QTABLE_CACHED_STRING_TYPE, 17)
+		AddColumn(controlId, 3, "Войти по рынку",  	true, QTABLE_CACHED_STRING_TYPE, 17)
+		AddColumn(controlId, 4, "Выйти",			true, QTABLE_CACHED_STRING_TYPE, 12)
+		AddColumn(controlId, 5, "Стопы",			true, QTABLE_CACHED_STRING_TYPE, 12)
+		AddColumn(controlId, 6, "Коротыш",			true, QTABLE_CACHED_STRING_TYPE, 12)
+		AddColumn(controlId, 7, "Удобства",			true, QTABLE_CACHED_STRING_TYPE, 17)
 		CreateWindow(controlId)
 
 
 		data = {
-			{"+ (++ пкм)", "Вверх", 				"Вверх",	"Сверху", 	"Отцентровать"},
-			{"0", 		   tostring(workingVolume), "0",		" ", 		"Очистить сделки"},
-			{"- (-- пкм)", "Вниз", 					"Вниз",		"Снизу", 	"1"}
+			{"+ (++ пкм)", "Вверх", 				"Вверх",	"Сверху",			"Сверху",		"Вверх",	"Отцентровать"},
+			{"0", 		   tostring(workingVolume), "0",		"+0, -0 (снять)",	"",				"",			"Очистить сделки"},
+			{"- (-- пкм)", "Вниз", 					"Вниз",		"Снизу",			"Снизу",		"Вниз", 	"1"}
 		}
 
 		for k, v in pairs(data) do
@@ -337,6 +366,8 @@ isRun 	  = true
 			SetCell(controlId, row, 3, v[3])
 			SetCell(controlId, row, 4, v[4])
 			SetCell(controlId, row, 5, v[5])
+			SetCell(controlId, row, 6, v[6])
+			SetCell(controlId, row, 7, v[7])
 		end
 
 		SetWindowCaption(controlId, "Управление")
@@ -362,7 +393,7 @@ isRun 	  = true
 		SetWindowCaption(metricsId, "Стаканы")
 		SetTableNotificationCallback(metricsId, metricsCallback)
 
-		SetWindowPos(controlId,320,550,440,140)
+		SetWindowPos(controlId,100,550,650,140)
 		SetWindowPos(metricsId,749,0,564,893)
 
 		local quotesF = getQuoteLevel2 ( futures.class , futures.sec)

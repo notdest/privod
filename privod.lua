@@ -34,6 +34,8 @@ dofile (getScriptPath() .. "\\tradingFunctions.lua")
 controlId = nil		-- айдишники таблиц
 metricsId = nil
 
+stopQuantity	= 0
+lastStopId		= 0
 middle	  		= 0
 contango  		= 0
 curPos	  		= 0
@@ -58,6 +60,16 @@ isRun 	  = true
 			printQuotes()
 		elseif class == share.class   and sec == share.sec   then
 			printQuotes2()
+		end
+	end
+
+	function OnTransReply(reply)
+		if reply.status == 3 then
+			if reply.trans_id == 108 then 		-- стопы с таким id, надо заменить на константы
+				stopQuantity = reply.quantity
+				lastStopId	 = reply.order_num
+				SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
+			end
 		end
 	end
 
@@ -143,6 +155,11 @@ isRun 	  = true
 				if     row == 1 then
 					local price, stopPrice = calculateStopUp( quotes )
 					buyStop(futures.class , futures.sec, math.abs(curPos), price, stopPrice)
+				elseif row == 2 then
+					dropStop(futures.class, lastStopId )
+					stopQuantity = 0
+					lastStopId	 = 0
+					SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
 				elseif row == 3 then
 					local price, stopPrice = calculateStopDown( quotes )
 					sellStop(futures.class , futures.sec, math.abs(curPos), price, stopPrice)

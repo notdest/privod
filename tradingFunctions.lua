@@ -8,7 +8,7 @@ function buyMarket(class, sec, count)
 	local price 	= tostring( quotes.offer[1].price )
 
 	local transaction = {
-		TRANS_ID				= "4",
+		TRANS_ID				= "104",
 		CLASSCODE				= class,
 		ACTION					= "Ввод заявки",
 		["Торговый счет"]		= tradingAccount,
@@ -33,7 +33,7 @@ function sellMarket(class, sec, count)
 	local price 	= tostring( quotes.bid[ math.floor(quotes.bid_count) ].price )
 
 	local transaction = {
-		TRANS_ID				= "5",
+		TRANS_ID				= "105",
 		CLASSCODE				= class,
 		ACTION					= "Ввод заявки",
 		["Торговый счет"]		= tradingAccount,
@@ -56,7 +56,7 @@ end
 
 function buyLimit(class, sec, count, price)
 	local transaction = {
-		TRANS_ID				= "4",
+		TRANS_ID				= "104",
 		CLASSCODE				= class,
 		ACTION					= "Ввод заявки",
 		["Торговый счет"]		= tradingAccount,
@@ -78,7 +78,7 @@ end
 
 function sellLimit(class, sec, count, price)
 	local transaction = {
-		TRANS_ID				= "5",
+		TRANS_ID				= "105",
 		CLASSCODE				= class,
 		ACTION					= "Ввод заявки",
 		["Торговый счет"]		= tradingAccount,
@@ -100,7 +100,7 @@ end
 
 function dropLimit(class,assets)
 	local transaction = {
-		TRANS_ID				= "4",
+		TRANS_ID				= "104",
 		CLASSCODE				= class,
 		ACTION					= "Удалить все заявки по условию",
 		["Торговый счет"]		= tradingAccount,
@@ -182,7 +182,7 @@ end
 
 function buyStop(class, sec, count, price, stopPrice)
 	transaction = {
-		TRANS_ID				= "7",
+		TRANS_ID				= "108",
 		CLASSCODE				= class,
 		ACTION					= "Стоп-заявка",
 		["Тип стоп-заявки"] 	= "Стоп-лимит",
@@ -214,7 +214,7 @@ end
 
 function sellStop(class, sec, count, price, stopPrice)
 	transaction = {
-		TRANS_ID				= "8",
+		TRANS_ID				= "108",
 		CLASSCODE				= class,
 		ACTION					= "Стоп-заявка",
 		["Тип стоп-заявки"] 	= "Стоп-лимит",
@@ -238,6 +238,17 @@ function sellStop(class, sec, count, price, stopPrice)
 		["Активна с"]			= "0",
 		["Активна по"]			= "235959",
 		["Стоп-цена2"]			= "0",
+	}
+
+	return sendTransaction(transaction)
+end
+
+function dropStop(class, id )
+	transaction = {
+		TRANS_ID				= "101",
+		CLASSCODE				= class,
+		ACTION					= "Снять стоп-заявку",
+		["Номер Стоп-Заявки"] 	= tostring(id),
 	}
 
 	return sendTransaction(transaction)

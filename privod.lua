@@ -38,6 +38,7 @@ lastStop 		= 0
 lastRealStop	= 0
 stopQuantity	= 0
 lastStopId		= 0
+
 middle	  		= 0
 contango  		= 0
 curPos	  		= 0
@@ -224,6 +225,8 @@ isRun 	  = true
 				exitPrice    = middle + math.floor(rowsCount/2) - row
 				buyLimit(futures.class , futures.sec ,workingVolume, exitPrice)
 				SetCell(controlId, 4, 4, "Вых: "..exitPrice )
+			elseif col == 3 then
+				lastStop  = middle + math.floor(rowsCount/2) - row
 			elseif col == 4 then
 				exitPrice = middle + math.floor(rowsCount/2) - row
 				sellLimit(futures.class , futures.sec ,workingVolume, exitPrice)
@@ -232,6 +235,15 @@ isRun 	  = true
 		elseif msg == QTABLE_RBUTTONDOWN then
 			if    col == 3 and exitPrice == middle + math.floor(rowsCount/2) - row then
 				dropLimit(futures.class,futures.assets)
+			end
+		elseif msg == QTABLE_LBUTTONUP then
+			if col == 3 then
+				lastRealStop = middle + math.floor(rowsCount/2) - row
+				if lastRealStop > lastStop then
+					buyStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
+				else
+					sellStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
+				end
 			end
 		end
 	end

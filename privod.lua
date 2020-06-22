@@ -60,6 +60,16 @@ isRun 	  = true
 		end
 	end
 
+	function OnStopOrder(order)
+		if bit.band( order.flags, 1) == 0 then
+			stopQuantity = 0
+			lastStopId	 = 0
+			lastStop 	 = 0
+			lastRealStop = 0
+			SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
+		end
+	end
+
 	function OnQuote(class, sec )
 		if     class == futures.class and sec == futures.sec then
 			printQuotes()

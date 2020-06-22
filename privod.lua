@@ -34,6 +34,8 @@ dofile (getScriptPath() .. "\\tradingFunctions.lua")
 controlId = nil		-- айдишники таблиц
 metricsId = nil
 
+lastStop 		= 0
+lastRealStop	= 0
 stopQuantity	= 0
 lastStopId		= 0
 middle	  		= 0
@@ -169,16 +171,18 @@ isRun 	  = true
 			elseif col == 5 then
 				local quotes = getQuoteLevel2 ( futures.class , futures.sec)
 				if     row == 1 then
-					local price, stopPrice = calculateStopUp( quotes )
-					buyStop(futures.class , futures.sec, math.abs(curPos), price, stopPrice)
+					lastRealStop, lastStop = calculateStopUp( quotes )
+					buyStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
 				elseif row == 2 then
 					dropStop(futures.class, lastStopId )
 					stopQuantity = 0
 					lastStopId	 = 0
+					lastStop = 0
+					lastRealStop = 0
 					SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
 				elseif row == 3 then
-					local price, stopPrice = calculateStopDown( quotes )
-					sellStop(futures.class , futures.sec, math.abs(curPos), price, stopPrice)
+					lastRealStop, lastStop = calculateStopDown( quotes )
+					sellStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
 				end
 
 
@@ -338,6 +342,15 @@ isRun 	  = true
 		if exitIndex > 0 and exitIndex <= rowsCount then
 			SetColor(metricsId, exitIndex, 3, RGB(0, 219, 216), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 		end
+
+		local stopIndexLow  = endValue - math.max(lastStop, lastRealStop)
+		local stopIndexHigh = endValue - math.min(lastStop, lastRealStop)
+		if stopIndexLow > 0 and stopIndexLow <= rowsCount and stopIndexHigh > 0 and stopIndexHigh <= rowsCount then
+			for i = stopIndexLow, stopIndexHigh do
+				SetColor(metricsId, i, 3, RGB(165, 0, 200), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+			end
+		end
+
 	end
 
 

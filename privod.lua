@@ -42,6 +42,7 @@ curPos	  		= 0
 openBuys		= 0
 openSells		= 0
 entryPrice		= 0
+exitPrice		= 0
 workingVolume	= 2
 
 isRun 	  = true
@@ -111,6 +112,11 @@ isRun 	  = true
 				entryPrice = 0
 				SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
 			end
+
+			if openBuys == 0 and openSells == 0 then
+				exitPrice = 0
+				SetCell(controlId, 4, 4, "Вых: "..exitPrice )
+			end
 		end
 	end
 
@@ -147,14 +153,16 @@ isRun 	  = true
 			elseif col == 4 then
 				if     row == 1 then
 					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
-					local price  = quotes.offer[1].price - 1
-					sellLimit(futures.class , futures.sec ,workingVolume, price)
+					exitPrice    = quotes.offer[1].price - 1
+					sellLimit(futures.class , futures.sec ,workingVolume, exitPrice)
+					SetCell(controlId, 4, 4, "Вых: "..exitPrice )
 				elseif row == 2 then
 					dropLimit(futures.class,futures.assets)
 				elseif row == 3 then
 					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
-					local price  = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
-					buyLimit(futures.class , futures.sec ,workingVolume, price)
+					exitPrice    = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
+					buyLimit(futures.class , futures.sec ,workingVolume, exitPrice)
+					SetCell(controlId, 4, 4, "Вых: "..exitPrice )
 				end
 
 
@@ -309,6 +317,11 @@ isRun 	  = true
 		if entryIndex > 0 and entryIndex <= rowsCount then
 			SetColor(metricsId, entryIndex, 3, RGB(177, 195, 59), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 		end
+
+		local exitIndex = endValue - exitPrice
+		if exitIndex > 0 and exitIndex <= rowsCount then
+			SetColor(metricsId, exitIndex, 3, RGB(0, 219, 216), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+		end
 	end
 
 
@@ -386,7 +399,7 @@ isRun 	  = true
 			{"+ (++ пкм)", "Вверх", 				"Вверх",		"Сверху",			"Сверху",		"Вверх",	"Отцентровать"},
 			{"0", 		   tostring(workingVolume), "0",			"+0, -0 (снять)",	"",				"",			"Очистить сделки"},
 			{"- (-- пкм)", "Вниз", 					"Вниз",			"Снизу",			"Снизу",		"Вниз", 	"1"},
-			{" ", 		   "", 						"Последняя: 0",	" ",				" ",			" ", 		" "}
+			{" ", 		   "", 						"Последняя: 0",	"Вых: 0",	" ",			" ", 		" "}
 		}
 
 		for k, v in pairs(data) do

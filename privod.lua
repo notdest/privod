@@ -214,6 +214,22 @@ isRun 	  = true
 	function metricsCallback(t_id, msg, row, col)											-- функция, которая обрабатывает таблицу с метриками
 		local str = string.format("Метрики, %s, row = %d, col = %d", event_table[msg], row, col)
 		message(str)
+
+		if msg == QTABLE_LBUTTONDOWN then
+			if    col == 2 then
+				exitPrice    = middle + math.floor(rowsCount/2) - row
+				buyLimit(futures.class , futures.sec ,workingVolume, exitPrice)
+				SetCell(controlId, 4, 4, "Вых: "..exitPrice )
+			elseif col == 4 then
+				exitPrice = middle + math.floor(rowsCount/2) - row
+				sellLimit(futures.class , futures.sec ,workingVolume, exitPrice)
+				SetCell(controlId, 4, 4, "Вых: "..exitPrice )
+			end
+		elseif msg == QTABLE_RBUTTONDOWN then
+			if    col == 3 and exitPrice == middle + math.floor(rowsCount/2) - row then
+				dropLimit(futures.class,futures.assets)
+			end
+		end
 	end
 
 

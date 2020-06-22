@@ -5,7 +5,7 @@ clientCode		= "SPBFUT002T9/"
 
 function buyMarket(class, sec, count)
 	local quotes	= getQuoteLevel2 ( class , sec)
-	local price 	= tostring( quotes.offer[1].price )
+	local result 	= ""
 
 	local transaction = {
 		TRANS_ID				= "104",
@@ -16,7 +16,7 @@ function buyMarket(class, sec, count)
 		["Тип"]					= "Рыночная",
 		["Класс"]				= class,
 		["Инструмент"]			= sec,
-		["Цена"]				= price,
+		["Цена"]				= '',
 		["Количество"]			= tostring(count),
 		["Условие исполнения"]	= "Поставить в очередь",
 		["Комментарий"]			= clientCode,
@@ -24,13 +24,31 @@ function buyMarket(class, sec, count)
 		["Дата экспирации"]		= os.date("%Y%m%d")
 	}
 
-	return sendTransaction(transaction)
+	for i = 1, tonumber(quotes.offer_count) do
+		transaction['Цена']	= tostring(quotes.offer[i].price)
+
+		if tonumber(quotes.offer[i].quantity) >= count then
+			transaction['Количество']	= tostring(count)
+			result	= sendTransaction(transaction)
+			break
+		else
+			transaction['Количество']	= tostring(quotes.offer[i].quantity)
+			result	= sendTransaction(transaction)
+			count 	= count - quotes.offer[i].quantity
+		end
+
+		if result ~= "" then
+			message("Сбой транзакции: "..result)
+		end
+	end
+
+	return tonumber(transaction['Цена'])
 end
 
 
 function sellMarket(class, sec, count)
 	local quotes	= getQuoteLevel2 ( class , sec)
-	local price 	= tostring( quotes.bid[ math.floor(quotes.bid_count) ].price )
+	local result 	= ""
 
 	local transaction = {
 		TRANS_ID				= "105",
@@ -41,7 +59,7 @@ function sellMarket(class, sec, count)
 		["Тип"]					= "Рыночная",
 		["Класс"]				= class,
 		["Инструмент"]			= sec,
-		["Цена"]				= price,
+		["Цена"]				= '',
 		["Количество"]			= tostring(count),
 		["Условие исполнения"]	= "Поставить в очередь",
 		["Комментарий"]			= clientCode,
@@ -49,7 +67,26 @@ function sellMarket(class, sec, count)
 		["Дата экспирации"]		= os.date("%Y%m%d")
 	}
 
-	return sendTransaction(transaction)
+
+	for i = tonumber(quotes.bid_count),1, -1 do
+		transaction['Цена']	= tostring(quotes.bid[i].price)
+
+		if tonumber(quotes.bid[i].quantity) >= count then
+			transaction['Количество']	= tostring(count)
+			result	= sendTransaction(transaction)
+			break
+		else
+			transaction['Количество']	= tostring(quotes.bid[i].quantity)
+			result	= sendTransaction(transaction)
+			count 	= count - quotes.bid[i].quantity
+		end
+
+		if result ~= "" then
+			message("Сбой транзакции: "..result)
+		end
+	end
+
+	return tonumber(transaction['Цена'])
 end
 
 

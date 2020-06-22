@@ -41,6 +41,7 @@ contango  		= 0
 curPos	  		= 0
 openBuys		= 0
 openSells		= 0
+entryPrice		= 0
 workingVolume	= 2
 
 isRun 	  = true
@@ -105,6 +106,11 @@ isRun 	  = true
 
 			SetCell(controlId, 2, 3, tostring(curPos) )
 			SetCell(controlId, 2, 4, "+"..openBuys..", -"..openSells.." (снять)" )
+
+			if curPos == 0 then
+				entryPrice = 0
+				SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
+			end
 		end
 	end
 
@@ -130,9 +136,11 @@ isRun 	  = true
 
 			elseif col == 3 then
 				if     row == 1 then
-					message(buyMarket( futures.class , futures.sec ,workingVolume))
+					entryPrice = buyMarket( futures.class , futures.sec ,workingVolume)
+					SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
 				elseif row == 3 then
-					message(sellMarket( futures.class , futures.sec ,workingVolume))
+					entryPrice = sellMarket( futures.class , futures.sec ,workingVolume)
+					SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
 				end
 
 
@@ -248,9 +256,9 @@ isRun 	  = true
 
 
 	function printQuotes()
-		quotes 			= getQuoteLevel2 ( futures.class , futures.sec)
-
-		endValue		= middle + math.floor(rowsCount/2)
+		quotes 			 = getQuoteLevel2 ( futures.class , futures.sec)
+		endValue		 = middle + math.floor(rowsCount/2)
+		local entryIndex = endValue - entryPrice
 
 		
 
@@ -296,6 +304,10 @@ isRun 	  = true
 				SetColor(metricsId, index, 4, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 				SetColor(metricsId, index, 3, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 			end
+		end
+
+		if entryIndex > 0 and entryIndex <= rowsCount then
+			SetColor(metricsId, entryIndex, 3, RGB(177, 195, 59), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 		end
 	end
 
@@ -371,9 +383,10 @@ isRun 	  = true
 
 
 		data = {
-			{"+ (++ пкм)", "Вверх", 				"Вверх",	"Сверху",			"Сверху",		"Вверх",	"Отцентровать"},
-			{"0", 		   tostring(workingVolume), "0",		"+0, -0 (снять)",	"",				"",			"Очистить сделки"},
-			{"- (-- пкм)", "Вниз", 					"Вниз",		"Снизу",			"Снизу",		"Вниз", 	"1"}
+			{"+ (++ пкм)", "Вверх", 				"Вверх",		"Сверху",			"Сверху",		"Вверх",	"Отцентровать"},
+			{"0", 		   tostring(workingVolume), "0",			"+0, -0 (снять)",	"",				"",			"Очистить сделки"},
+			{"- (-- пкм)", "Вниз", 					"Вниз",			"Снизу",			"Снизу",		"Вниз", 	"1"},
+			{" ", 		   "", 						"Последняя: 0",	" ",				" ",			" ", 		" "}
 		}
 
 		for k, v in pairs(data) do

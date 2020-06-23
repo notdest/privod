@@ -141,6 +141,21 @@ isRun 	  = true
 			openBuys	= futPos.openbuys
 			openSells	= futPos.opensells
 
+			if curPos == 0 then
+				if lastStopId ~= 0 then
+					dropStop(futures.class, lastStopId )
+					stopQuantity = 0
+					lastStopId	 = 0
+					lastStop 	 = 0
+					lastRealStop = 0
+					SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
+				end
+
+				if openBuys ~= 0 or openSells ~= 0 then
+					dropLimit(futures.class,futures.assets)
+				end
+			end
+
 			SetCell(controlId, 2, 3, tostring(curPos) )
 			SetCell(controlId, 2, 4, "+"..openBuys..", -"..openSells.." (снять)" )
 

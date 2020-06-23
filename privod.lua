@@ -34,6 +34,7 @@ dofile (getScriptPath() .. "\\tradingFunctions.lua")
 controlId = nil		-- айдишники таблиц
 metricsId = nil
 
+autoStop		= false
 lastStop 		= 0
 lastRealStop	= 0
 stopQuantity	= 0
@@ -114,6 +115,28 @@ isRun 	  = true
 
 	function OnFuturesClientHolding( futPos)
 		if futPos.sec_code == futures.sec then
+
+			if curPos ~= futPos.totalnet and autoStop then						-- автоматическое выставление стопа
+				if lastStopId ~= 0 then
+					dropStop(futures.class, lastStopId )
+					stopQuantity = 0
+					lastStopId	 = 0
+					lastStop 	 = 0
+					lastRealStop = 0
+					SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
+				end
+
+				local quotes = getQuoteLevel2 ( futures.class , futures.sec)
+
+				if 	   futPos.totalnet > 0 then
+					lastRealStop, lastStop = calculateStopDown( quotes )
+					sellStop(futures.class , futures.sec, math.abs(futPos.totalnet), lastRealStop, lastStop)
+				elseif futPos.totalnet < 0 then
+					lastRealStop, lastStop = calculateStopUp( quotes )
+					buyStop(futures.class , futures.sec, math.abs(futPos.totalnet), lastRealStop, lastStop)
+				end
+			end
+
 			curPos 		= futPos.totalnet
 			openBuys	= futPos.openbuys
 			openSells	= futPos.opensells
@@ -136,7 +159,7 @@ isRun 	  = true
 	function controlCallback(t_id, msg, row, col)											-- функция, которая обрабатывает таблицу управления
 		if     msg == QTABLE_LBUTTONDOWN then
 
-			if     col == 1 then
+			if     col == 1 then																-- Контанго
 				if     row == 1 then
 					addContango(1)
 				elseif row == 3 then
@@ -144,7 +167,7 @@ isRun 	  = true
 				end
 
 
-			elseif col == 2 then
+			elseif col == 2 then																-- Рабочий объем
 				if     row == 1 then
 					workingVolume = workingVolume + 1
 				elseif row == 3 then
@@ -153,7 +176,7 @@ isRun 	  = true
 				SetCell(controlId, 2, 2, tostring(workingVolume) )
 
 
-			elseif col == 3 then
+			elseif col == 3 then																-- Рыночные
 				if     row == 1 then
 					entryPrice = buyMarket( futures.class , futures.sec ,workingVolume)
 					SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
@@ -164,7 +187,7 @@ isRun 	  = true
 
 
 			elseif col == 4 then
-				if     row == 1 then
+				if     row == 1 then															-- Лимитки
 					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
 					exitPrice    = quotes.offer[1].price - 1
 					sellLimit(futures.class , futures.sec ,workingVolume, exitPrice)
@@ -179,9 +202,9 @@ isRun 	  = true
 				end
 
 
-			elseif col == 5 then
-				local quotes = getQuoteLevel2 ( futures.class , futures.sec)
+			elseif col == 5 then																-- Стопы
 				if     row == 1 then
+					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
 					lastRealStop, lastStop = calculateStopUp( quotes )
 					buyStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
 				elseif row == 2 then
@@ -192,12 +215,21 @@ isRun 	  = true
 					lastRealStop = 0
 					SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
 				elseif row == 3 then
+					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
 					lastRealStop, lastStop = calculateStopDown( quotes )
 					sellStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
+				elseif row == 4 then
+					if autoStop then
+						autoStop = false
+						SetCell(controlId, 4, col, "Ручной" )
+					else
+						autoStop = true
+						SetCell(controlId, 4, col, "Авто" )
+					end
 				end
 
 
-			elseif col == 6 then
+			elseif col == 6 then																-- Коротыши
 				if     row == 1 then
 					message("Вверх")
 				elseif row == 3 then
@@ -450,7 +482,7 @@ isRun 	  = true
 			{"+ (++ пкм)", "Вверх", 				"Вверх",		"Сверху",			"Сверху",		"Вверх",	"Отцентровать"},
 			{"0", 		   tostring(workingVolume), "0",			"+0, -0 (снять)",	"",				"",			"Очистить сделки"},
 			{"- (-- пкм)", "Вниз", 					"Вниз",			"Снизу",			"Снизу",		"Вниз", 	"1"},
-			{" ", 		   "", 						"Последняя: 0",	"Вых: 0",	" ",			" ", 		" "}
+			{" ", 		   "", 						"Последняя: 0",	"Вых: 0",			"Ручной",		" ", 		" "}
 		}
 
 		for k, v in pairs(data) do

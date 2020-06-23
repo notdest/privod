@@ -364,7 +364,7 @@ isRun 	  = true
 
 		for k, v in pairs(quotes.bid) do
 			local index	= endValue - v.price
-			if index <= rowsCount then
+			if index >= 1 and index <= rowsCount then
 
 					local color = colors.green.heavy
 					if tonumber(v.quantity) < futures.volume.medium then
@@ -381,7 +381,7 @@ isRun 	  = true
 
 		for k, v in pairs(quotes.offer) do
 			index	= endValue - v.price
-			if index >= 1 then
+			if index >= 1 and index <= rowsCount then
 
 					local color = colors.red.heavy
 					if tonumber(v.quantity) < futures.volume.medium then
@@ -436,7 +436,7 @@ isRun 	  = true
 		if tonumber(quotes.bid_count) > 0 then
 			for k, v in pairs(quotes.bid) do
 				local index	= endValue - math.floor(v.price * 100)
-				if index <= rowsCount then
+				if index >= 1 and index <= rowsCount then
 
 					local color = colors.green.heavy
 					if tonumber(v.quantity) < share.volume.medium then
@@ -455,7 +455,7 @@ isRun 	  = true
 		if tonumber(quotes.offer_count) > 0 then
 			for k, v in pairs(quotes.offer) do
 				index	= endValue - math.floor(v.price * 100)
-				if index >= 1 then
+				if index >= 1 and index <= rowsCount then
 
 					local color = colors.red.heavy
 					if tonumber(v.quantity) < share.volume.medium then

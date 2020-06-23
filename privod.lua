@@ -287,6 +287,14 @@ isRun 	  = true
 					sellStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
 				end
 			end
+		elseif msg == QTABLE_VKEY then														-- Всякие клавиши
+			if     col == 38 then													-- стрелка вверх
+				entryPrice = buyMarket( futures.class , futures.sec ,workingVolume)
+				SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
+			elseif col == 40 then													-- стрелка вниз
+				entryPrice = sellMarket( futures.class , futures.sec ,workingVolume)
+				SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
+			end
 		end
 	end
 

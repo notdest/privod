@@ -154,15 +154,19 @@ isRun 	  = true
 				if openBuys ~= 0 or openSells ~= 0 then
 					dropLimit(futures.class,futures.assets)
 				end
+
+				entryPrice = 0
+				SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
+
+				SetColor(controlId, 2, 3, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+			elseif curPos > 0 then
+				SetColor(controlId, 2, 3, colors.green.heavy, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+			elseif curPos < 0 then
+				SetColor(controlId, 2, 3, colors.red.heavy, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 			end
 
 			SetCell(controlId, 2, 3, tostring(curPos) )
 			SetCell(controlId, 2, 4, "+"..openBuys..", -"..openSells.." (снять)" )
-
-			if curPos == 0 then
-				entryPrice = 0
-				SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
-			end
 
 			if openBuys == 0 and openSells == 0 then
 				exitPrice = 0

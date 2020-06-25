@@ -250,7 +250,9 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 				buyLimit(futures.class , futures.sec ,workingVolume, exitPrice)
 				SetCell(controlId, 4, 4, "Вых: "..exitPrice )
 			elseif col == 3 then
-				lastStop  = middle + math.floor(rowsCount/2) - row
+				if lastStopId == 0 then
+					lastStop  = middle + math.floor(rowsCount/2) - row
+				end
 			elseif col == 4 then
 				exitPrice = middle + math.floor(rowsCount/2) - row
 				sellLimit(futures.class , futures.sec ,workingVolume, exitPrice)
@@ -271,11 +273,16 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 			end
 		elseif msg == QTABLE_LBUTTONUP then
 			if col == 3 then
-				lastRealStop = middle + math.floor(rowsCount/2) - row
-				if lastRealStop > lastStop then
-					buyStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
-				else
-					sellStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
+				if lastStopId == 0 then
+					lastRealStop = middle + math.floor(rowsCount/2) - row
+					if     lastRealStop > lastStop then
+						buyStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
+					elseif lastRealStop < lastStop then
+						sellStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
+					else
+						lastRealStop = 0
+						lastStop 	 = 0
+					end
 				end
 			end
 		elseif msg == QTABLE_VKEY then														-- Всякие клавиши

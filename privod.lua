@@ -257,8 +257,17 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 				SetCell(controlId, 4, 4, "Вых: "..exitPrice )
 			end
 		elseif msg == QTABLE_RBUTTONDOWN then
-			if    col == 3 and exitPrice == middle + math.floor(rowsCount/2) - row then
-				dropLimit(futures.class,futures.assets)
+			local priceOfClick = middle + math.floor(rowsCount/2) - row
+			if    col == 3 then
+				if 	   exitPrice == priceOfClick then
+					dropLimit(futures.class,futures.assets)
+
+				elseif (priceOfClick >= lastStop and priceOfClick <= lastRealStop)
+					or (priceOfClick <= lastStop and priceOfClick >= lastRealStop) then
+
+					dropStop(futures.class, lastStopId )
+					displayNoStop()
+				end
 			end
 		elseif msg == QTABLE_LBUTTONUP then
 			if col == 3 then

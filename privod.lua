@@ -303,12 +303,14 @@ isRun 	  = true
 				end
 			end
 		elseif msg == QTABLE_VKEY then														-- Всякие клавиши
-			if     col == 38 then													-- стрелка вверх
+			if     col == 38 then													-- стрелка вверх, вход по рынку
 				entryPrice = buyMarket( futures.class , futures.sec ,workingVolume)
 				SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
-			elseif col == 40 then													-- стрелка вниз
+			elseif col == 40 then													-- стрелка вниз, вход по рынку
 				entryPrice = sellMarket( futures.class , futures.sec ,workingVolume)
 				SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
+			elseif col == 96 then													-- нуль на панели слева, отцентрировать стакан
+				setMiddle()
 			end
 		end
 	end

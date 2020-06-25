@@ -1,7 +1,7 @@
 rowsCount	= 80	-- настройки таблицы с индикаторами
 
 updateInterval  = 300
-eraseInterval	= 15000
+eraseInterval	= 60000
 
 futures		= {	class 	= "SPBFUT",
 				sec 	= "SRU0",

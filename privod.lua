@@ -242,24 +242,7 @@ isRun 	  = true
 						SetCell(controlId, 4, col, "Авто" )
 					end
 				end
-
-
-			elseif col == 6 then																-- Коротыши
-				if     row == 1 then
-					message("Вверх")
-				elseif row == 3 then
-					message("Вниз")
-				end
-
-
-			elseif col == 7 then
-				if     row == 1 then
-					setMiddle()
-				elseif row == 2 then
-					clearTrades()
-				end
 			end
-
 
 		elseif msg == QTABLE_RBUTTONDOWN then
 			if     col == 1 then
@@ -498,16 +481,14 @@ isRun 	  = true
 		AddColumn(controlId, 3, "Войти по рынку",  	true, QTABLE_CACHED_STRING_TYPE, 17)
 		AddColumn(controlId, 4, "Выйти",			true, QTABLE_CACHED_STRING_TYPE, 12)
 		AddColumn(controlId, 5, "Стопы",			true, QTABLE_CACHED_STRING_TYPE, 12)
-		AddColumn(controlId, 6, "Коротыш",			true, QTABLE_CACHED_STRING_TYPE, 12)
-		AddColumn(controlId, 7, "Удобства",			true, QTABLE_CACHED_STRING_TYPE, 17)
 		CreateWindow(controlId)
 
 
 		data = {
-			{"+ (++ пкм)", "Вверх", 				"Вверх",		"Сверху",			"Сверху",		"Вверх",	"Отцентровать"},
-			{"0", 		   tostring(workingVolume), "0",			"+0, -0 (снять)",	"",				"",			"Очистить сделки"},
-			{"- (-- пкм)", "Вниз", 					"Вниз",			"Снизу",			"Снизу",		"Вниз", 	"1"},
-			{" ", 		   "", 						"Последняя: 0",	"Вых: 0",			"Ручной",		" ", 		" "}
+			{"+ (++ пкм)", "Вверх", 				"Вверх",		"Сверху",			"Сверху" },
+			{"0", 		   tostring(workingVolume), "0",			"+0, -0 (снять)",	""		 },
+			{"- (-- пкм)", "Вниз", 					"Вниз",			"Снизу",			"Снизу"  },
+			{" ", 		   "", 						"Последняя: 0",	"Вых: 0",			"Ручной" }
 		}
 
 		for k, v in pairs(data) do
@@ -544,7 +525,7 @@ isRun 	  = true
 		SetWindowCaption(metricsId, "Стаканы")
 		SetTableNotificationCallback(metricsId, metricsCallback)
 
-		SetWindowPos(controlId,100,550,650,140)
+		SetWindowPos(controlId,280,550,470,140)
 		SetWindowPos(metricsId,749,0,564,893)
 
 		local quotesF = getQuoteLevel2 ( futures.class , futures.sec)

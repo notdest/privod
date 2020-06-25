@@ -20,3 +20,11 @@
 		printQuotes2()
 		clearTrades()
 	end
+
+	function displayNoStop()
+		stopQuantity = 0
+		lastStopId	 = 0
+		lastStop 	 = 0
+		lastRealStop = 0
+		SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
+	end

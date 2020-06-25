@@ -65,11 +65,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 
 	function OnStopOrder(order)
 		if bit.band( order.flags, 1) == 0 then
-			stopQuantity = 0
-			lastStopId	 = 0
-			lastStop 	 = 0
-			lastRealStop = 0
-			SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
+			displayNoStop()
 		end
 	end
 
@@ -115,11 +111,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 			if curPos ~= futPos.totalnet and autoStop then						-- автоматическое выставление стопа
 				if lastStopId ~= 0 then
 					dropStop(futures.class, lastStopId )
-					stopQuantity = 0
-					lastStopId	 = 0
-					lastStop 	 = 0
-					lastRealStop = 0
-					SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
+					displayNoStop()
 				end
 
 				local quotes = getQuoteLevel2 ( futures.class , futures.sec)
@@ -140,11 +132,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 			if curPos == 0 then
 				if lastStopId ~= 0 then
 					dropStop(futures.class, lastStopId )
-					stopQuantity = 0
-					lastStopId	 = 0
-					lastStop 	 = 0
-					lastRealStop = 0
-					SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
+					displayNoStop()
 				end
 
 				if openBuys ~= 0 or openSells ~= 0 then
@@ -224,11 +212,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 					buyStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
 				elseif row == 2 then
 					dropStop(futures.class, lastStopId )
-					stopQuantity = 0
-					lastStopId	 = 0
-					lastStop = 0
-					lastRealStop = 0
-					SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
+					displayNoStop()
 				elseif row == 3 then
 					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
 					lastRealStop, lastStop = calculateStopDown( quotes )

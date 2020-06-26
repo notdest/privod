@@ -299,6 +299,15 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 				sellMarket( futures.class , futures.sec ,workingVolume)
 			elseif col == 96 then													-- нуль на панели слева, отцентрировать стакан
 				setMiddle()
+			elseif col == 27 then													-- esc, снять лимитки и стопы
+				if lastStopId ~= 0 then
+					dropStop(futures.class, lastStopId )
+					displayNoStop()
+				end
+
+				if openBuys ~= 0 or openSells ~= 0 then
+					dropLimit(futures.class,futures.assets)
+				end
 			end
 		end
 	end

@@ -69,6 +69,13 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 		end
 	end
 
+	function OnOrder( order)
+		if curPos == 0 and bit.band( order.flags, 1) == 0 and entryPrice == 0 then
+			entryPrice = order.price
+			SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
+		end
+	end
+
 	function OnQuote(class, sec )
 		if     class == futures.class and sec == futures.sec then
 			printQuotes()
@@ -181,11 +188,9 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 
 			elseif col == 3 then																-- Рыночные
 				if     row == 1 then
-					entryPrice = buyMarket( futures.class , futures.sec ,workingVolume)
-					SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
+					buyMarket( futures.class , futures.sec ,workingVolume)
 				elseif row == 3 then
-					entryPrice = sellMarket( futures.class , futures.sec ,workingVolume)
-					SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
+					sellMarket( futures.class , futures.sec ,workingVolume)
 				end
 
 
@@ -287,11 +292,9 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 			end
 		elseif msg == QTABLE_VKEY then														-- Всякие клавиши
 			if     col == 38 then													-- стрелка вверх, вход по рынку
-				entryPrice = buyMarket( futures.class , futures.sec ,workingVolume)
-				SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
+				buyMarket( futures.class , futures.sec ,workingVolume)
 			elseif col == 40 then													-- стрелка вниз, вход по рынку
-				entryPrice = sellMarket( futures.class , futures.sec ,workingVolume)
-				SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
+				sellMarket( futures.class , futures.sec ,workingVolume)
 			elseif col == 96 then													-- нуль на панели слева, отцентрировать стакан
 				setMiddle()
 			end

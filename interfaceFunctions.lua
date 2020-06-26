@@ -28,3 +28,19 @@
 		lastRealStop = 0
 		SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
 	end
+
+
+
+--  отладочные функции
+
+	function printArray( arr )
+		message("      ")
+		for k, v in pairs(arr) do
+			if type(v) == "table" then
+				message(k..": таблица")
+			else
+				message(k..": "..v)
+			end
+		end
+		message("      ")
+	end

@@ -308,6 +308,16 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 				if openBuys ~= 0 or openSells ~= 0 then
 					dropLimit(futures.class,futures.assets)
 				end
+			elseif col == 37 then													-- (стрелка влево) - за€вка на выход, вне стакана
+				local quotes = getQuoteLevel2 ( futures.class , futures.sec)
+				if curPos > 0 then
+					exitPrice    = quotes.offer[1].price - 1
+					sellLimit(futures.class , futures.sec ,math.abs(curPos), exitPrice)
+				elseif curPos < 0 then
+					exitPrice    = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
+					buyLimit(futures.class , futures.sec ,math.abs(curPos), exitPrice)
+				end
+				SetCell(controlId, 4, 4, "¬ых: "..exitPrice )
 			end
 		end
 	end

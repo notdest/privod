@@ -132,6 +132,8 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 				end
 			end
 
+			local lastPos 	= curPos
+
 			curPos 		= futPos.totalnet
 			openBuys	= futPos.openbuys
 			openSells	= futPos.opensells
@@ -142,7 +144,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 					displayNoStop()
 				end
 
-				if openBuys ~= 0 or openSells ~= 0 then
+				if (openBuys ~= 0 or openSells ~= 0) and lastPos ~= curPos then
 					dropLimit(futures.class,futures.assets)
 				end
 

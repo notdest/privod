@@ -318,6 +318,21 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 					buyLimit(futures.class , futures.sec ,math.abs(curPos), exitPrice)
 				end
 				SetCell(controlId, 4, 4, "Вых: "..exitPrice )
+			elseif col == 46 then													-- del, всё снять, всюду выйти
+				if lastStopId ~= 0 then
+					dropStop(futures.class, lastStopId )
+					displayNoStop()
+				end
+
+				if openBuys ~= 0 or openSells ~= 0 then
+					dropLimit(futures.class,futures.assets)
+				end
+
+				if curPos > 0 then
+					sellMarket( futures.class , futures.sec ,math.abs(curPos))
+				elseif curPos < 0 then
+					buyMarket( futures.class , futures.sec ,math.abs(curPos))
+				end
 			end
 		end
 	end

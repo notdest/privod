@@ -252,22 +252,22 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 		message(str)
 
 		if msg == QTABLE_LBUTTONDOWN then
-			if    col == 2 then
+			if    col == 3 then
 				exitPrice    = middle + math.floor(rowsCount/2) - row
 				buyLimit(futures.class , futures.sec ,workingVolume, exitPrice)
 				SetCell(controlId, 4, 4, "Вых: "..exitPrice )
-			elseif col == 3 then
+			elseif col == 4 then
 				if lastStopId == 0 then
 					lastStop  = middle + math.floor(rowsCount/2) - row
 				end
-			elseif col == 4 then
+			elseif col == 5 then
 				exitPrice = middle + math.floor(rowsCount/2) - row
 				sellLimit(futures.class , futures.sec ,workingVolume, exitPrice)
 				SetCell(controlId, 4, 4, "Вых: "..exitPrice )
 			end
 		elseif msg == QTABLE_RBUTTONDOWN then
 			local priceOfClick = middle + math.floor(rowsCount/2) - row
-			if    col == 3 then
+			if    col == 4 then
 				if 	   exitPrice == priceOfClick then
 					dropLimit(futures.class,futures.assets)
 
@@ -279,7 +279,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 				end
 			end
 		elseif msg == QTABLE_LBUTTONUP then
-			if col == 3 then
+			if col == 4 then
 				if lastStopId == 0 then
 					lastRealStop = middle + math.floor(rowsCount/2) - row
 					if     lastRealStop > lastStop then
@@ -342,10 +342,19 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 	function OnAllTrade( trade )															-- Прилетела обезличенная сделка
 		if     trade.class_code == futures.class and trade.sec_code == futures.sec then
 			local row	= middle + math.floor(rowsCount/2) - trade.price
+			if trade.flags == 1 then
+				addTrade(trade,row,2)
+			else
+				addTrade(trade,row,1)
+			end
 			addTrade(trade,row,1)
 		elseif trade.class_code == share.class   and trade.sec_code == share.sec then
 			local row	= middle + math.floor(rowsCount/2 - trade.price * 100) - contango
-			addTrade(trade,row,5)
+			if trade.flags == 1 then
+				addTrade(trade,row,7)
+			else
+				addTrade(trade,row,6)
+			end
 		end
 	end
 
@@ -377,13 +386,13 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 		
 
 		for i = 1, rowsCount do 								-- выводим линейку у фьюча и очищаем его
-			SetCell(metricsId, i, 3, tostring( endValue - i) )
-			SetCell(metricsId, i, 2, '' )
-			SetCell(metricsId, i, 4, '' )
+			SetCell(metricsId, i, 4, tostring( endValue - i) )
+			SetCell(metricsId, i, 3, '' )
+			SetCell(metricsId, i, 5, '' )
 
-			SetColor(metricsId, i, 2, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 			SetColor(metricsId, i, 3, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 			SetColor(metricsId, i, 4, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+			SetColor(metricsId, i, 5, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 		end
 
 		for k, v in pairs(quotes.bid) do
@@ -397,9 +406,9 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 						color = colors.green.medium
 					end
 
-				SetCell(metricsId, 	index, 2, tostring( v.quantity) )
-				SetColor(metricsId, index, 2, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+				SetCell(metricsId, 	index, 3, tostring( v.quantity) )
 				SetColor(metricsId, index, 3, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+				SetColor(metricsId, index, 4, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 			end
 		end
 
@@ -414,26 +423,26 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 						color = colors.red.medium
 					end
 
-				SetCell(metricsId, 	index, 4, tostring( v.quantity) )
+				SetCell(metricsId, 	index, 5, tostring( v.quantity) )
+				SetColor(metricsId, index, 5, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 				SetColor(metricsId, index, 4, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-				SetColor(metricsId, index, 3, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 			end
 		end
 
 		if entryIndex > 0 and entryIndex <= rowsCount then
-			SetColor(metricsId, entryIndex, 3, RGB(177, 195, 59), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+			SetColor(metricsId, entryIndex, 4, RGB(177, 195, 59), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 		end
 
 		local exitIndex = endValue - exitPrice
 		if exitIndex > 0 and exitIndex <= rowsCount then
-			SetColor(metricsId, exitIndex, 3, RGB(0, 219, 216), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+			SetColor(metricsId, exitIndex, 4, RGB(0, 219, 216), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 		end
 
 		local stopIndexLow  = endValue - math.max(lastStop, lastRealStop)
 		local stopIndexHigh = endValue - math.min(lastStop, lastRealStop)
 		if stopIndexLow > 0 and stopIndexLow <= rowsCount and stopIndexHigh > 0 and stopIndexHigh <= rowsCount then
 			for i = stopIndexLow, stopIndexHigh do
-				SetColor(metricsId, i, 3, RGB(165, 0, 200), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+				SetColor(metricsId, i, 4, RGB(165, 0, 200), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 			end
 		end
 
@@ -447,13 +456,13 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 		
 
 		for i = 1, rowsCount do 								-- выводим линейку у фьюча и очищаем его
-			SetCell(metricsId, i, 7, string.format("%01.2f", (endValue - i)/100 ) )
-			SetCell(metricsId, i, 6, '' )
+			SetCell(metricsId, i, 9, string.format("%01.2f", (endValue - i)/100 ) )
 			SetCell(metricsId, i, 8, '' )
+			SetCell(metricsId, i, 10, '' )
 
-			SetColor(metricsId, i, 6, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-			SetColor(metricsId, i, 7, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 			SetColor(metricsId, i, 8, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+			SetColor(metricsId, i, 9, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+			SetColor(metricsId, i, 10, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 		end
 
 
@@ -469,9 +478,9 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 						color = colors.green.medium
 					end
 
-					SetCell(metricsId, 	index, 6, tostring( v.quantity) )
-					SetColor(metricsId, index, 6, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-					SetColor(metricsId, index, 7, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+					SetCell(metricsId, 	index, 8, tostring( v.quantity) )
+					SetColor(metricsId, index, 8, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+					SetColor(metricsId, index, 9, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 				end
 			end
 		end
@@ -488,9 +497,9 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 						color = colors.red.medium
 					end
 
-					SetCell(metricsId, 	index, 8, tostring( v.quantity) )
-					SetColor(metricsId, index, 8, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-					SetColor(metricsId, index, 7, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+					SetCell(metricsId, 	index, 10, tostring( v.quantity) )
+					SetColor(metricsId, index, 10, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+					SetColor(metricsId, index, 9, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 				end
 			end
 		end
@@ -531,14 +540,16 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 
 
 		metricsId = AllocTable()															-- Создаем таблицу с стаканом
-		AddColumn(metricsId, 1, "Сделки",	true, QTABLE_INT_TYPE, 10)
-		AddColumn(metricsId, 2, "", 		true, QTABLE_INT_TYPE, 10)
-		AddColumn(metricsId, 3, "Фьючерс",  true, QTABLE_INT_TYPE, 10)
-		AddColumn(metricsId, 4, "", 		true, QTABLE_INT_TYPE, 10)
-		AddColumn(metricsId, 5, "Сделки",  	true, QTABLE_INT_TYPE, 10)
-		AddColumn(metricsId, 6, "", 		true, QTABLE_INT_TYPE, 10)
-		AddColumn(metricsId, 7, "Акция",  	true, QTABLE_INT_TYPE, 10)
-		AddColumn(metricsId, 8, "", 		true, QTABLE_INT_TYPE, 10)
+		AddColumn(metricsId, 1, "пок",		true, QTABLE_INT_TYPE, 7)
+		AddColumn(metricsId, 2, "прод",		true, QTABLE_INT_TYPE, 7)
+		AddColumn(metricsId, 3, "", 		true, QTABLE_INT_TYPE, 8)
+		AddColumn(metricsId, 4, "Фьючерс",  true, QTABLE_INT_TYPE, 10)
+		AddColumn(metricsId, 5, "", 		true, QTABLE_INT_TYPE, 8)
+		AddColumn(metricsId, 6, "пок",  	true, QTABLE_INT_TYPE, 7)
+		AddColumn(metricsId, 7, "прод",  	true, QTABLE_INT_TYPE, 7)
+		AddColumn(metricsId, 8, "", 		true, QTABLE_INT_TYPE, 8)
+		AddColumn(metricsId, 9, "Акция",  	true, QTABLE_INT_TYPE, 10)
+		AddColumn(metricsId, 10, "", 		true, QTABLE_INT_TYPE, 8)
 		CreateWindow(metricsId)
 
 
@@ -550,7 +561,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 		SetTableNotificationCallback(metricsId, metricsCallback)
 
 		SetWindowPos(controlId,280,550,470,140)
-		SetWindowPos(metricsId,749,0,564,893)
+		SetWindowPos(metricsId,749,0,555,893)
 
 		local quotesF = getQuoteLevel2 ( futures.class , futures.sec)
 		local quotesS = getQuoteLevel2 ( share.class   , share.sec)

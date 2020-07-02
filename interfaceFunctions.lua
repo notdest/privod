@@ -2,7 +2,9 @@
 	function clearTrades()
 		for i = 1, rowsCount do
 			SetCell(metricsId, i, 1, '' )
-			SetCell(metricsId, i, 5, '' )
+			SetCell(metricsId, i, 2, '' )
+			SetCell(metricsId, i, 6, '' )
+			SetCell(metricsId, i, 7, '' )
 		end
 	end
 

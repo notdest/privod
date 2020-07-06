@@ -360,6 +360,21 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 				elseif curPos < 0 then
 					buyMarket( futures.class , futures.sec ,math.abs(curPos))
 				end
+			elseif col == 49 then													-- 1, установить объем
+				workingVolume = 1
+				SetCell(controlId, 2, 2, tostring(workingVolume) )
+			elseif col == 50 then													-- 2, установить объем
+				workingVolume = 2
+				SetCell(controlId, 2, 2, tostring(workingVolume) )
+			elseif col == 51 then													-- 3, установить объем
+				workingVolume = 5
+				SetCell(controlId, 2, 2, tostring(workingVolume) )
+			elseif col == 52 then													-- 4, установить объем
+				workingVolume = 10
+				SetCell(controlId, 2, 2, tostring(workingVolume) )
+			elseif col == 53 then													-- 5, установить объем
+				workingVolume = 15
+				SetCell(controlId, 2, 2, tostring(workingVolume) )
 			end
 		end
 	end

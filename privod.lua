@@ -50,7 +50,9 @@ exitPrice		= 0
 workingVolume	= 2
 currentResult	= 0
 
-isRun 	  = true
+f 		= nil
+
+isRun 	= true
 
 dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 
@@ -62,7 +64,14 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 		if metricsId ~= nil then
 			DestroyTable(metricsId)
 		end
+
+        f:flush()
+        f:close()
 	end
+
+    function OnInit( path )
+        f = io.open(getScriptPath() .. os.date("\\%Y-%m-%d.csv"), "a")
+    end
 
 	function OnStopOrder(order)
 		if bit.band( order.flags, 1) == 0 then
@@ -100,8 +109,10 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 	function onRealOrder( price, qty, isOffer )
 		if isOffer then
 			currentResult = currentResult + price*qty
+			f:write(os.date("%X")..","..price..",-"..qty.."\n")
 		else
 			currentResult = currentResult - price*qty
+			f:write(os.date("%X")..","..price..","..qty.."\n")
 		end
 
 		if entryPrice == 0 then

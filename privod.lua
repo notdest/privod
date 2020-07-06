@@ -69,9 +69,36 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 		end
 	end
 
+	partialDeals	= {} -- сделки, где исполнена только часть
 	function OnOrder( order)
-		if curPos == 0 and bit.band( order.flags, 1) == 0 and entryPrice == 0 then
-			entryPrice = order.price
+
+		if order.trans_id > 0 and order.balance < order.qty then					-- Эта сделака частично исполнена
+			local oldBalance = order.qty
+			if partialDeals[order.ordernum] ~= nil then
+				oldBalance	= partialDeals[order.ordernum]
+			end
+
+			if oldBalance - order.balance > 0 then			-- если ее исполнили сейчас
+				onRealOrder( order.price, oldBalance - order.balance, bit.band( order.flags, 4) ~= 0 )
+
+				if order.balance > 0 and bit.band( order.flags, 1) ~= 0 then
+					partialDeals[order.ordernum] = order.balance
+				end
+			end
+
+			if 	(partialDeals[order.ordernum] ~= nil)	-- сделка исполнялась, но теперь не активна
+				and (order.balance == 0 or bit.band( order.flags, 1) == 0) then
+					partialDeals[order.ordernum] = nil
+			end
+		end
+
+
+	end
+
+	-- функция, которуя я вызываю, если мы действительно что-то купили или продали
+	function onRealOrder( price, qty, isOffer )
+		if entryPrice == 0 then
+			entryPrice = price
 			SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
 		end
 	end

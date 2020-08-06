@@ -34,7 +34,6 @@ dofile (getScriptPath() .. "\\tradingFunctions.lua")
 controlId = nil		-- айдишники таблиц
 metricsId = nil
 
-autoStop		= false
 lastStop 		= 0
 lastRealStop	= 0
 stopQuantity	= 0
@@ -160,23 +159,6 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 	function OnFuturesClientHolding( futPos)
 		if futPos.sec_code == futures.sec then
 
-			if curPos ~= futPos.totalnet and autoStop then						-- автоматическое выставление стопа
-				if lastStopId ~= 0 then
-					dropStop(futures.class, lastStopId )
-					displayNoStop()
-				end
-
-				local quotes = getQuoteLevel2 ( futures.class , futures.sec)
-
-				if 	   futPos.totalnet > 0 then
-					lastRealStop, lastStop = calculateStopDown( quotes )
-					sellStop(futures.class , futures.sec, math.abs(futPos.totalnet), lastRealStop, lastStop)
-				elseif futPos.totalnet < 0 then
-					lastRealStop, lastStop = calculateStopUp( quotes )
-					buyStop(futures.class , futures.sec, math.abs(futPos.totalnet), lastRealStop, lastStop)
-				end
-			end
-
 			local lastPos 	= curPos
 
 			curPos 		= futPos.totalnet
@@ -263,25 +245,9 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 
 
 			elseif col == 5 then																-- Стопы
-				if     row == 1 then
-					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
-					lastRealStop, lastStop = calculateStopUp( quotes )
-					buyStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
-				elseif row == 2 then
+				if     row == 2 then
 					dropStop(futures.class, lastStopId )
 					displayNoStop()
-				elseif row == 3 then
-					local quotes = getQuoteLevel2 ( futures.class , futures.sec)
-					lastRealStop, lastStop = calculateStopDown( quotes )
-					sellStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
-				elseif row == 4 then
-					if autoStop then
-						autoStop = false
-						SetCell(controlId, 4, col, "Ручной" )
-					else
-						autoStop = true
-						SetCell(controlId, 4, col, "Авто" )
-					end
 				end
 			end
 
@@ -583,9 +549,9 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 
 
 		data = {
-			{"+ (++ пкм)", "Вверх", 				"Вверх",		"Сверху",			"Сверху" },
+			{"+ (++ пкм)", "Вверх", 				"Вверх",		"Сверху",			"" },
 			{"0", 		   tostring(workingVolume), "0",			"+0, -0 (снять)",	""		 },
-			{"- (-- пкм)", "Вниз", 					"Вниз",			"Снизу",			"Снизу"  },
+			{"- (-- пкм)", "Вниз", 					"Вниз",			"Снизу",			""  },
 			{"Рез: 0", 	   "", 						"Последняя: 0",	"Вых: 0",			"Ручной" }
 		}
 
@@ -596,8 +562,6 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 			SetCell(controlId, row, 3, v[3])
 			SetCell(controlId, row, 4, v[4])
 			SetCell(controlId, row, 5, v[5])
-			SetCell(controlId, row, 6, v[6])
-			SetCell(controlId, row, 7, v[7])
 		end
 
 		SetWindowCaption(controlId, "Управление")

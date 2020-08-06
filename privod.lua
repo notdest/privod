@@ -46,7 +46,7 @@ openBuys		= 0
 openSells		= 0
 entryPrice		= 0
 exitPrice		= 0
-workingVolume	= 2
+workingVolume	= 1
 currentResult	= 0
 
 f 		= nil
@@ -373,7 +373,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 	function OnAllTrade( trade )															-- Прилетела обезличенная сделка
 		if     trade.class_code == futures.class and trade.sec_code == futures.sec then
 			local row	= middle + math.floor(rowsCount/2) - trade.price
-			if trade.flags == 1 then
+			if bit.band( trade.flags, 1) ~= 0 then
 				addTrade(trade,row,2)
 			else
 				addTrade(trade,row,1)
@@ -381,7 +381,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 			addTrade(trade,row,1)
 		elseif trade.class_code == share.class   and trade.sec_code == share.sec then
 			local row	= middle + math.floor(rowsCount/2 - trade.price * 100) - contango
-			if trade.flags == 1 then
+			if bit.band( trade.flags, 1) ~= 0 then
 				addTrade(trade,row,7)
 			else
 				addTrade(trade,row,6)

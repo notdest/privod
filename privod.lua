@@ -223,6 +223,9 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 					addContango(1)
 				elseif row == 3 then
 					addContango(-1)
+				elseif row == 4 then
+					f:flush()
+					SetCell(controlId, 4, 1, "Ðåç: "..currentResult )
 				end
 
 

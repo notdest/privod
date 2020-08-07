@@ -113,6 +113,8 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 			currentResult = currentResult - price*qty
 			f:write(os.date("%X")..","..price..","..qty.."\n")
 		end
+        f:flush()
+
 
 		if entryPrice == 0 then
 			entryPrice = price
@@ -206,7 +208,6 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 				elseif row == 3 then
 					addContango(-1)
 				elseif row == 4 then
-					f:flush()
 					SetCell(controlId, 4, 1, "Ðåç: "..currentResult )
 				end
 

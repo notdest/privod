@@ -48,7 +48,6 @@ openSells		= 0
 entryPrice		= 0
 exitPrice		= 0
 workingVolume	= 1
-currentResult	= 0
 
 f 		= nil
 
@@ -108,10 +107,8 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 	-- функция, которуя я вызываю, если мы действительно что-то купили или продали
 	function onRealOrder( price, qty, isOffer )
 		if isOffer then
-			currentResult = currentResult + price*qty
 			f:write(os.date("%X")..","..price..",-"..qty.."\n")
 		else
-			currentResult = currentResult - price*qty
 			f:write(os.date("%X")..","..price..","..qty.."\n")
 		end
         f:flush()
@@ -179,8 +176,6 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 					dropLimit(futures.class,futures.assets)
 				end
 
-				SetCell(controlId, 4, 1, "Рез: "..currentResult )
-
 				entryPrice = 0
 				SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
 
@@ -215,8 +210,6 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 					addContango(1)
 				elseif row == 3 then
 					addContango(-1)
-				elseif row == 4 then
-					SetCell(controlId, 4, 1, "Рез: "..currentResult )
 				end
 
 
@@ -561,7 +554,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 			{"+ (++ cкм)", "Вверх", 				"Вверх",		"Сверху",			"" },
 			{"0", 		   tostring(workingVolume), "0",			"+0, -0 (снять)",	""		 },
 			{"- (-- cкм)", "Вниз", 					"Вниз",			"Снизу",			""  },
-			{"Рез: 0", 	   "", 						"Последняя: 0",	"Вых: 0",			"Ручной" }
+			{"", 	       "", 						"Последняя: 0",	"Вых: 0",			"Ручной" }
 		}
 
 		for k, v in pairs(data) do

@@ -39,6 +39,7 @@ lastRealStop	= 0
 stopQuantity	= 0
 lastStopId		= 0
 
+lastPrice       = 0
 middle	  		= 0
 contango  		= 0
 curPos	  		= 0
@@ -116,6 +117,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
         f:flush()
 
 
+        lastPrice   = price
 		if entryPrice == 0 then
 			entryPrice = price
 			SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
@@ -185,8 +187,14 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 				SetColor(controlId, 2, 3, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 			elseif curPos > 0 then
 				SetColor(controlId, 2, 3, colors.green.heavy, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+                if entryPrice == 0 then
+                    entryPrice = lastPrice
+                end
 			elseif curPos < 0 then
 				SetColor(controlId, 2, 3, colors.red.heavy, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+                if entryPrice == 0 then
+                    entryPrice = lastPrice
+                end
 			end
 
 			SetCell(controlId, 2, 3, tostring(curPos) )

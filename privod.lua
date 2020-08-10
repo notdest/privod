@@ -401,7 +401,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 					SetCell(metricsId,row,col,tostring( tonumber(oldVal.image) + trade.qty))
 				end
 
-				if trade.flags == 1 then
+				if bit.band( trade.flags, 1) ~= 0 then
 					Highlight(metricsId, row, col, colors.red.heavy , QTABLE_DEFAULT_COLOR , 200)
 				else
 					Highlight(metricsId, row, col, colors.green.heavy, QTABLE_DEFAULT_COLOR , 200)

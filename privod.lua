@@ -380,7 +380,6 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 			else
 				addTrade(trade,row,1)
 			end
-			addTrade(trade,row,1)
 		elseif trade.class_code == share.class   and trade.sec_code == share.sec then
 			local row	= middle + math.floor(rowsCount/2 - trade.price * 100) - contango
 			if bit.band( trade.flags, 1) ~= 0 then

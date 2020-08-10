@@ -260,7 +260,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 				end
 			end
 
-		elseif msg == QTABLE_RBUTTONDOWN then
+		elseif msg == QTABLE_MBUTTONDOWN then
 			if     col == 1 then
 				if     row == 1 then
 					addContango(10)
@@ -290,7 +290,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 				sellLimit(futures.class , futures.sec ,workingVolume, exitPrice)
 				SetCell(controlId, 4, 4, "Вых: "..exitPrice )
 			end
-		elseif msg == QTABLE_RBUTTONDOWN then
+		elseif msg == QTABLE_MBUTTONDOWN then
 			local priceOfClick = middle + math.floor(rowsCount/2) - row
 			if    col == 4 then
 				if 	   exitPrice == priceOfClick then
@@ -558,9 +558,9 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 
 
 		data = {
-			{"+ (++ пкм)", "Вверх", 				"Вверх",		"Сверху",			"" },
+			{"+ (++ cкм)", "Вверх", 				"Вверх",		"Сверху",			"" },
 			{"0", 		   tostring(workingVolume), "0",			"+0, -0 (снять)",	""		 },
-			{"- (-- пкм)", "Вниз", 					"Вниз",			"Снизу",			""  },
+			{"- (-- cкм)", "Вниз", 					"Вниз",			"Снизу",			""  },
 			{"Рез: 0", 	   "", 						"Последняя: 0",	"Вых: 0",			"Ручной" }
 		}
 

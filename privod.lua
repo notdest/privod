@@ -395,9 +395,9 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 			local oldVal = GetCell(metricsId,row,col)
 
 				if oldVal.image == "" then
-					SetCell(metricsId,row,col,tostring(trade.qty))
+					SetCell(metricsId,row,col, string.format("%d", trade.qty) )
 				else
-					SetCell(metricsId,row,col,tostring( tonumber(oldVal.image) + trade.qty))
+					SetCell(metricsId,row,col, string.format("%d", tonumber(oldVal.image) + trade.qty) )
 				end
 
 				if bit.band( trade.flags, 1) ~= 0 then

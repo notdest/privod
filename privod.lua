@@ -376,35 +376,55 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 		if     trade.class_code == futures.class and trade.sec_code == futures.sec then
 			local row	= middle + math.floor(rowsCount/2) - trade.price
 			if bit.band( trade.flags, 1) ~= 0 then
-				addTrade(trade,row,2)
+				addTrade(trade,row,2,futures.volume )
 			else
-				addTrade(trade,row,1)
+				addTrade(trade,row,1,futures.volume)
 			end
 		elseif trade.class_code == share.class   and trade.sec_code == share.sec then
 			local row	= middle + math.floor(rowsCount/2 - trade.price * 100) - contango
 			if bit.band( trade.flags, 1) ~= 0 then
-				addTrade(trade,row,7)
+				addTrade(trade,row,7,share.volume)
 			else
-				addTrade(trade,row,6)
+				addTrade(trade,row,6,share.volume)
 			end
 		end
 	end
 
-	function addTrade( trade,row,col )
+	function addTrade( trade,row,col,volumes )
 		if row >= 1 and row <= rowsCount then
 			local oldVal = GetCell(metricsId,row,col)
+			local color, qty
 
 				if oldVal.image == "" then
-					SetCell(metricsId,row,col, string.format("%d", trade.qty) )
+					qty = trade.qty
 				else
-					SetCell(metricsId,row,col, string.format("%d", tonumber(oldVal.image) + trade.qty) )
+					qty = tonumber(oldVal.image) + trade.qty
 				end
+				SetCell(metricsId,row,col, string.format("%d", qty) )
 
 				if bit.band( trade.flags, 1) ~= 0 then
 					Highlight(metricsId, row, col, colors.red.heavy , QTABLE_DEFAULT_COLOR , 200)
+
+					color 	= colors.red.heavy
+
+					if 		qty < volumes.medium 	then
+						color = colors.red.light
+					elseif 	qty < volumes.high 		then
+						color = colors.red.medium
+					end
 				else
 					Highlight(metricsId, row, col, colors.green.heavy, QTABLE_DEFAULT_COLOR , 200)
+
+					color 	= colors.green.heavy
+
+					if 		qty < volumes.medium 	then
+						color = colors.green.light
+					elseif 	qty < volumes.high 		then
+						color = colors.green.medium
+					end
 				end
+
+				SetColor(metricsId, row, col, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 		end
 	end
 

@@ -63,14 +63,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 		if metricsId ~= nil then
 			DestroyTable(metricsId)
 		end
-
-        f:flush()
-        f:close()
 	end
-
-    function OnInit( path )
-        f = io.open(getScriptPath() .. os.date("\\%Y-%m-%d.csv"), "a")
-    end
 
 	function OnStopOrder(order)
 		if bit.band( order.flags, 1) == 0 then
@@ -106,14 +99,6 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 
 	-- функция, которуя я вызываю, если мы действительно что-то купили или продали
 	function onRealOrder( price, qty, isOffer )
-		if isOffer then
-			f:write(os.date("%X")..","..price..",-"..qty.."\n")
-		else
-			f:write(os.date("%X")..","..price..","..qty.."\n")
-		end
-        f:flush()
-
-
         lastPrice   = price
 		if entryPrice == 0 then
 			entryPrice = price
@@ -138,23 +123,6 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 			end
 		end
 	end
-
-	event_table = {				-- это потом удалим
-	[QTABLE_LBUTTONDOWN] 	= "Нажали левую кнопку мыши",
-	[QTABLE_RBUTTONDOWN] 	= "Нажали правую кнопку мыши",
-	[QTABLE_LBUTTONDBLCLK] 	= "Левый даблклик",
-	[QTABLE_RBUTTONDBLCLK]	= "Правый даблклик",
-	[QTABLE_SELCHANGED] 	= "Изменилась строка",
-	[QTABLE_CHAR] 			= "Символьная клавиша",
-	[QTABLE_VKEY] 			= "Еще какая-то клавиша",
-	[QTABLE_CONTEXTMENU] 	= "Контекстное меню",
-	[QTABLE_MBUTTONDOWN] 	= "Нажали на колесико мыши",
-	[QTABLE_MBUTTONDBLCLK] 	= "Даблклик колесом",
-	[QTABLE_LBUTTONUP] 		= "Отпустили левую кнопку мыши",
-	[QTABLE_RBUTTONUP] 		= "Отпустили правую кнопку мыши",
-	[QTABLE_CLOSE] 			= "Закрыли таблицу"
-}
-
 
 
 	function OnFuturesClientHolding( futPos)
@@ -266,8 +234,6 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 
 
 	function metricsCallback(t_id, msg, row, col)											-- функция, которая обрабатывает таблицу с метриками
-		local str = string.format("Метрики, %s, row = %d, col = %d", event_table[msg], row, col)
-		message(str)
 
 		if msg == QTABLE_LBUTTONDOWN then
 			if    col == 3 then

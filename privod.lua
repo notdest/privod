@@ -49,6 +49,11 @@ entryPrice		= 0
 exitPrice		= 0
 workingVolume	= 1
 
+mark 	= {
+	buy 	= 0,
+	sell 	= 0
+}
+
 f 		= nil
 
 isRun 	= true
@@ -261,7 +266,27 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 					dropStop(futures.class, lastStopId )
 					displayNoStop()
 				end
+
+			elseif col == 3 then				-- ставим метку в покупках
+				if mark.buy == 0 then
+					mark.buy = priceOfClick
+				elseif mark.sell ~= 0 then
+					mark.buy  = 0
+					mark.sell = 0
+				else
+					mark.buy = 0
+				end
+			elseif col == 5 then				-- ставим метку в продажах
+				if mark.sell == 0 then
+					mark.sell = priceOfClick
+				elseif mark.buy ~= 0 then
+					mark.buy  = 0
+					mark.sell = 0
+				else
+					mark.sell = 0
+				end
 			end
+
 		elseif msg == QTABLE_LBUTTONUP then
 			if col == 4 then
 				if lastStopId == 0 then
@@ -447,22 +472,32 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 			end
 		end
 
-		if entryIndex > 0 and entryIndex <= rowsCount then
+		if entryIndex > 0 and entryIndex <= rowsCount then										-- подсвечиваем вход
 			SetColor(metricsId, entryIndex, 4, RGB(177, 195, 59), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 		end
 
 		local exitIndex = endValue - exitPrice
-		if exitIndex > 0 and exitIndex <= rowsCount then
+		if exitIndex > 0 and exitIndex <= rowsCount then										-- подсвечиваем выход
 			SetColor(metricsId, exitIndex, 4, RGB(0, 219, 216), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 		end
 
-		local stopIndexLow  = endValue - math.max(lastStop, lastRealStop)
+		local markIndex = {buy = endValue - mark.buy , sell = endValue - mark.sell}				-- подсвечиваем пометки
+		if markIndex.buy > 0 and markIndex.buy <= rowsCount then
+			SetColor(metricsId, markIndex.buy, 3, RGB(177, 195, 59), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+		end
+		if markIndex.sell > 0 and markIndex.sell <= rowsCount then
+			SetColor(metricsId, markIndex.sell, 5, RGB(177, 195, 59), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+		end
+
+		local stopIndexLow  = endValue - math.max(lastStop, lastRealStop)						-- подсвечиваем стоп
 		local stopIndexHigh = endValue - math.min(lastStop, lastRealStop)
 		if stopIndexLow > 0 and stopIndexLow <= rowsCount and stopIndexHigh > 0 and stopIndexHigh <= rowsCount then
 			for i = stopIndexLow, stopIndexHigh do
 				SetColor(metricsId, i, 4, RGB(165, 0, 200), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 			end
 		end
+
+
 
 	end
 
@@ -473,7 +508,7 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 
 		
 
-		for i = 1, rowsCount do 								-- выводим линейку у фьюча и очищаем его
+		for i = 1, rowsCount do 								-- выводим линейку у акции и очищаем его
 			SetCell(metricsId, i, 9, string.format("%01.2f", (endValue - i)/100 ) )
 			SetCell(metricsId, i, 8, '' )
 			SetCell(metricsId, i, 10, '' )

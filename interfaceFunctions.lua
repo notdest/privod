@@ -72,6 +72,32 @@
 		SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
 	end
 
+	function getProfit( buyCommission,sellComission )
+		local qty 		= 0
+		local summ 		= 0
+		local profit 	= 0
+
+		for i = 0,getNumberOf('trades') - 1 do
+		    item    = getItem('trades',i)
+
+			if item.class_code == futures.class and item.sec_code == futures.sec then
+			    if bit.band( item.flags, 4) ~= 0 then	-- это продажа?
+			    	qty 	= qty - item.qty
+			    	summ 	= summ + item.qty*item.price - item.qty*sellComission
+			    else    
+			    	qty 	= qty + item.qty
+			    	summ 	= summ - item.qty*item.price - item.qty*buyCommission
+			    end
+
+			    if qty == 0 then
+			    	profit = summ
+			    end
+			end
+		end
+
+		return profit
+	end
+
 
 
 	function addTrade( trade,row,col,volumes )

@@ -149,6 +149,8 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 					dropLimit(futures.class,futures.assets)
 				end
 
+				SetCell(controlId, 4, 1, string.format("%01.2f", getProfit(1.99,0.5) ) )
+
 				entryPrice = 0
 				SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
 
@@ -183,6 +185,8 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 					addContango(1)
 				elseif row == 3 then
 					addContango(-1)
+				elseif row == 4 then
+					SetCell(controlId, 4, 1, string.format("%01.2f", getProfit(1.99,0.5) ) )
 				end
 
 

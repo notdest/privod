@@ -1,5 +1,6 @@
 
 	function clearTrades()
+		shiftOrders(share.volume)
 		for i = 1, rowsCount do
 			SetCell(metricsId, i, 1, '' )
 			SetCell(metricsId, i, 2, '' )
@@ -11,6 +12,41 @@
 			SetColor(metricsId, i, 6, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 			SetColor(metricsId, i, 7, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 		end
+	end
+
+	function shiftOrders( volumes )
+		local color, qty
+
+		for i=1,4 do
+			qty = tonumber(GetCell(controlId,5,i+1).image)
+
+			color 	= colors.red.heavy
+			if 		qty < volumes.medium 	then
+				color = colors.red.light
+			elseif 	qty < volumes.high 		then
+				color = colors.red.medium
+			end
+			SetCell(controlId,5,i, string.format("%d", qty) )
+			SetColor(controlId, 5, i, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+
+
+			qty = tonumber(GetCell(controlId,6,i+1).image)
+			color 	= colors.green.heavy
+			if 		qty < volumes.medium 	then
+				color = colors.green.light
+			elseif 	qty < volumes.high 		then
+				color = colors.green.medium
+			end
+			SetCell(controlId,6,i, string.format("%d", qty) )
+			SetColor(controlId, 6, i, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+		end
+
+
+		SetCell(controlId,5,5, '0' )
+		SetCell(controlId,6,5, '0' )
+
+		SetColor(controlId, 5, 5, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+		SetColor(controlId, 6, 5, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 	end
 
 	function setMiddle()
@@ -36,6 +72,75 @@
 		SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
 	end
 
+
+
+	function addTrade( trade,row,col,volumes )
+		if row >= 1 and row <= rowsCount then
+			local oldVal = GetCell(metricsId,row,col)
+			local color, qty
+
+				if oldVal.image == "" then
+					qty = trade.qty
+				else
+					qty = tonumber(oldVal.image) + trade.qty
+				end
+				SetCell(metricsId,row,col, string.format("%d", qty) )
+
+				if bit.band( trade.flags, 1) ~= 0 then
+					Highlight(metricsId, row, col, colors.red.heavy , QTABLE_DEFAULT_COLOR , 200)
+
+					color 	= colors.red.heavy
+
+					if 		qty < volumes.medium 	then
+						color = colors.red.light
+					elseif 	qty < volumes.high 		then
+						color = colors.red.medium
+					end
+				else
+					Highlight(metricsId, row, col, colors.green.heavy, QTABLE_DEFAULT_COLOR , 200)
+
+					color 	= colors.green.heavy
+
+					if 		qty < volumes.medium 	then
+						color = colors.green.light
+					elseif 	qty < volumes.high 		then
+						color = colors.green.medium
+					end
+				end
+
+				SetColor(metricsId, row, col, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+		end
+	end
+
+
+	function addTradeToControl( trade,row,col,volumes )
+		local oldVal = GetCell(controlId,row,col)
+		local color, qty
+
+			qty = tonumber(oldVal.image) + trade.qty
+
+			SetCell(controlId,row,col, string.format("%d", qty) )
+
+			if bit.band( trade.flags, 1) ~= 0 then
+				color 	= colors.red.heavy
+
+				if 		qty < volumes.medium 	then
+					color = colors.red.light
+				elseif 	qty < volumes.high 		then
+					color = colors.red.medium
+				end
+			else
+				color 	= colors.green.heavy
+
+				if 		qty < volumes.medium 	then
+					color = colors.green.light
+				elseif 	qty < volumes.high 		then
+					color = colors.green.medium
+				end
+			end
+
+			SetColor(controlId, row, col, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+	end
 
 
 --  отладочные функции

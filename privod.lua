@@ -375,47 +375,11 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 			local row	= middle + math.floor(rowsCount/2 - trade.price * 100) - contango
 			if bit.band( trade.flags, 1) ~= 0 then
 				addTrade(trade,row,7,share.volume)
+				addTradeToControl(trade,5,5,share.volume)
 			else
 				addTrade(trade,row,6,share.volume)
+				addTradeToControl(trade,6,5,share.volume)
 			end
-		end
-	end
-
-	function addTrade( trade,row,col,volumes )
-		if row >= 1 and row <= rowsCount then
-			local oldVal = GetCell(metricsId,row,col)
-			local color, qty
-
-				if oldVal.image == "" then
-					qty = trade.qty
-				else
-					qty = tonumber(oldVal.image) + trade.qty
-				end
-				SetCell(metricsId,row,col, string.format("%d", qty) )
-
-				if bit.band( trade.flags, 1) ~= 0 then
-					Highlight(metricsId, row, col, colors.red.heavy , QTABLE_DEFAULT_COLOR , 200)
-
-					color 	= colors.red.heavy
-
-					if 		qty < volumes.medium 	then
-						color = colors.red.light
-					elseif 	qty < volumes.high 		then
-						color = colors.red.medium
-					end
-				else
-					Highlight(metricsId, row, col, colors.green.heavy, QTABLE_DEFAULT_COLOR , 200)
-
-					color 	= colors.green.heavy
-
-					if 		qty < volumes.medium 	then
-						color = colors.green.light
-					elseif 	qty < volumes.high 		then
-						color = colors.green.medium
-					end
-				end
-
-				SetColor(metricsId, row, col, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 		end
 	end
 
@@ -574,7 +538,9 @@ dofile (getScriptPath() .. "\\interfaceFunctions.lua")
 			{"+ (++ cкм)", "Вверх", 				"Вверх",		"Сверху",			"" },
 			{"0", 		   tostring(workingVolume), "0",			"+0, -0 (снять)",	""		 },
 			{"- (-- cкм)", "Вниз", 					"Вниз",			"Снизу",			""  },
-			{"", 	       "", 						"Последняя: 0",	"Вых: 0",			"Ручной" }
+			{"", 	       "", 						"Последняя: 0",	"Вых: 0",			"Ручной" },
+			{"0", 	       "0", 					"0",			"0",				"0" },
+			{"0", 	       "0", 					"0",			"0",				"0" }
 		}
 
 		for k, v in pairs(data) do

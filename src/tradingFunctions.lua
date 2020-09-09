@@ -1,6 +1,3 @@
-tradingAccount	= "A709HZP"
-clientCode		= "4LUCY/"
-
 
 
 function buyMarket(class, sec, count)

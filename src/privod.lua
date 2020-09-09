@@ -3,22 +3,6 @@ rowsCount	= 80	-- настройки таблицы с индикаторами
 updateInterval  = 300
 eraseInterval	= 60000
 
-futures		= {	class 	= "SPBFUT",
-				sec 	= "SRU0",
-				assets	= "SBRF",
-				volume 	= {
-					medium 	= 10,
-					high 	= 100
-				}
-}
-share		= {	class 	= "TQBR",
-				sec 	= "SBER",
-				volume 	= {
-					medium 	= 100,
-					high 	= 1000
-				}
-}
-
 colors 	= {
 	green	= {light = RGB(29, 36, 27), medium = RGB(32, 54, 26), heavy = RGB(35, 74, 25) },
 	red		= {light = RGB(55, 31, 31), medium = RGB(76, 35, 35), heavy = RGB(116, 41, 41) }
@@ -29,7 +13,7 @@ colors 	= {
 
 
 
-dofile (getScriptPath() .. "\\tradingFunctions.lua")
+dofile (getScriptPath() .. "\\src\\tradingFunctions.lua")
 
 controlId = nil		-- айдишники таблиц
 metricsId = nil
@@ -58,7 +42,7 @@ f 		= nil
 
 isRun 	= true
 
-dofile (getScriptPath() .. "\\interfaceFunctions.lua")
+dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
 
 	function OnStop()
 		isRun = false

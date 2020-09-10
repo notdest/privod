@@ -73,9 +73,10 @@
 	end
 
 	function getProfit( buyCommission,sellComission )
-		local qty 		= 0
-		local summ 		= 0
-		local profit 	= 0
+		local qty 				= morningPos
+		local summ 				= 0
+		local profit 			= 0
+		local needCorrection 	= (0 ~= morningPos)
 
 		for i = 0,getNumberOf('trades') - 1 do
 		    item    = getItem('trades',i)
@@ -90,13 +91,41 @@
 			    end
 
 			    if qty == 0 then
-			    	profit = summ
+			    	if needCorrection then
+			    		summ 			= 0
+			    		needCorrection 	= false
+			    	else
+			    		profit = summ
+			    	end 
 			    end
 			end
 		end
 
 		return profit
 	end
+
+	-- позицию на начало сесси вычисляем как разность количество бумаг по сделкам и текущей позиции
+	function getMorningPos()
+		local qty 		= 0
+
+		for i = 0,getNumberOf('trades') - 1 do
+		    item    = getItem('trades',i)
+
+			if item.class_code == futures.class and item.sec_code == futures.sec then
+			    if bit.band( item.flags, 4) ~= 0 then	-- это продажа?
+					qty 	= qty - item.qty
+			    else
+					qty 	= qty + item.qty
+			    end
+			end
+		end
+
+		local futPos = getFuturesHolding( "SPBFUT01", tradingAccount , futures.sec , 0) 		-- aaaaaaaaaaaa, Внимание!!! SPBFUT01 надо выпилить
+
+
+		return futPos.totalnet-qty
+	end
+
 
 
 

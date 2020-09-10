@@ -32,17 +32,21 @@ openSells		= 0
 entryPrice		= 0
 exitPrice		= 0
 workingVolume	= 1
+morningPos		= 0		-- баланс на начало сессии, для алгоритмов на основе таблицы сделок
 
 mark 	= {
 	buy 	= 0,
 	sell 	= 0
 }
 
-f 		= nil
 
 isRun 	= true
 
 dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
+
+	function OnInit()
+		morningPos = getMorningPos()
+	end
 
 	function OnStop()
 		isRun = false

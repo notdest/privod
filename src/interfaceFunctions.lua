@@ -120,7 +120,7 @@
             end
         end
 
-        local futPos = getFuturesHolding( "SPBFUT01", tradingAccount , futures.sec , 0)         -- aaaaaaaaaaaa, Внимание!!! SPBFUT01 надо выпилить
+        local futPos = getFuturesHolding( firmId, tradingAccount , futures.sec , 0)
 
 
         return futPos.totalnet-qty

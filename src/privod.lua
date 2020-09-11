@@ -39,6 +39,7 @@ mark    = {
     sell    = 0
 }
 
+entrances   = { 22105, 22088 }
 
 isRun   = true
 
@@ -450,6 +451,13 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
         if stopIndexLow > 0 and stopIndexLow <= rowsCount and stopIndexHigh > 0 and stopIndexHigh <= rowsCount then
             for i = stopIndexLow, stopIndexHigh do
                 SetColor(metricsId, i, 4, RGB(165, 0, 200), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+            end
+        end
+
+        for k, v in pairs(entrances) do
+            index   = endValue - v
+            if index > 0 and index <= rowsCount then
+                SetColor(metricsId, index, 4, RGB(177, 195, 59), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
             end
         end
 

@@ -18,5 +18,6 @@ share		= {	class 	= "TQBR",
 
 tradingAccount	= "A709HZP"
 clientCode		= "4LUCY/"
+firmId 			= "SPBFUT01"
 
 dofile (getScriptPath() .. "\\src\\privod.lua")

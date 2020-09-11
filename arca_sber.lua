@@ -17,5 +17,6 @@ share		= {	class 	= "QJSIM",
 
 tradingAccount	= "SPBFUT0008n"
 clientCode		= "10265/"
+firmId 			= "SPBFUT000000"
 
 dofile (getScriptPath() .. "\\src\\privod.lua")

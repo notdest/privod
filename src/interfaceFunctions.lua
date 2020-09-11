@@ -126,7 +126,62 @@
         return futPos.totalnet-qty
     end
 
+    function getEntrances()
+        local qty       = morningPos
+        local lastZero  = 0
 
+        for i = 0,getNumberOf('trades') - 1 do
+            item    = getItem('trades',i)
+
+            if item.class_code == futures.class and item.sec_code == futures.sec then
+                if bit.band( item.flags, 4) ~= 0 then   -- это продажа?
+                    qty     = qty - item.qty
+                else    
+                    qty     = qty + item.qty
+                end
+
+                if qty == 0 then
+                    lastZero    = i
+                end
+            end
+        end
+
+        if( lastZero >= (getNumberOf('trades') - 1)) then
+            return {}
+        end
+
+        item    = getItem('trades',lastZero +1)
+        local globalDirection = (bit.band( item.flags, 4) ~= 0)
+        local localDirection  = false
+
+        local movements = {}
+        for i=lastZero+1 ,getNumberOf('trades') - 1 do
+            item    = getItem('trades',i)
+            localDirection  = (bit.band( item.flags, 4) ~= 0)
+
+            if localDirection == globalDirection then
+                for i=1,item.qty do
+                    table.insert(movements, item.price)
+                end
+            else
+                for i=1,item.qty do
+                    movements[#movements] = nil
+                end
+            end 
+        end
+
+        local hash  = {}
+        local res   = {}
+
+        for _,v in ipairs(movements) do
+           if (not hash[v]) then
+               res[#res+1] = v
+               hash[v] = true
+           end
+        end
+
+        return res
+    end
 
 
     function addTrade( trade,row,col,volumes )

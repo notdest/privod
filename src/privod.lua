@@ -23,13 +23,11 @@ lastRealStop    = 0
 stopQuantity    = 0
 lastStopId      = 0
 
-lastPrice       = 0
 middle          = 0
 contango        = 0
 curPos          = 0
 openBuys        = 0
 openSells       = 0
-entryPrice      = 0
 exitPrice       = 0
 workingVolume   = 1
 morningPos      = 0     -- баланс на начало сессии, для алгоритмов на основе таблицы сделок
@@ -39,7 +37,7 @@ mark    = {
     sell    = 0
 }
 
-entrances   = { 22105, 22088 }
+entrances   = { }
 
 isRun   = true
 
@@ -75,7 +73,7 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
             end
 
             if oldBalance - order.balance > 0 then          -- если ее исполнили сейчас
-                onRealOrder( order.price, oldBalance - order.balance, bit.band( order.flags, 4) ~= 0 )
+                entrances   = getEntrances()
 
                 if order.balance > 0 and bit.band( order.flags, 1) ~= 0 then
                     partialDeals[order.ordernum] = order.balance
@@ -91,14 +89,6 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
 
     end
 
-    -- функция, которуя я вызываю, если мы действительно что-то купили или продали
-    function onRealOrder( price, qty, isOffer )
-        lastPrice   = price
-        if entryPrice == 0 then
-            entryPrice = price
-            SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
-        end
-    end
 
     function OnQuote(class, sec )
         if     class == futures.class and sec == futures.sec then
@@ -140,20 +130,12 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
 
                 SetCell(controlId, 4, 1, string.format("%01.2f", getProfit(1.99,0.5) ) )
 
-                entryPrice = 0
-                SetCell(controlId, 4, 3, "Последняя: "..entryPrice )
-
                 SetColor(controlId, 2, 3, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
             elseif curPos > 0 then
                 SetColor(controlId, 2, 3, colors.green.heavy, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-                if entryPrice == 0 then
-                    entryPrice = lastPrice
-                end
+
             elseif curPos < 0 then
                 SetColor(controlId, 2, 3, colors.red.heavy, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-                if entryPrice == 0 then
-                    entryPrice = lastPrice
-                end
             end
 
             SetCell(controlId, 2, 3, tostring(curPos) )
@@ -381,8 +363,6 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
     function printQuotes()
         quotes           = getQuoteLevel2 ( futures.class , futures.sec)
         endValue         = middle + math.floor(rowsCount/2)
-        local entryIndex = endValue - entryPrice
-
         
 
         for i = 1, rowsCount do                                 -- выводим линейку у фьюча и очищаем его
@@ -429,9 +409,6 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
             end
         end
 
-        if entryIndex > 0 and entryIndex <= rowsCount then                                      -- подсвечиваем вход
-            SetColor(metricsId, entryIndex, 4, RGB(177, 195, 59), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-        end
 
         local exitIndex = endValue - exitPrice
         if exitIndex > 0 and exitIndex <= rowsCount then                                        -- подсвечиваем выход
@@ -538,7 +515,7 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
             {"+ (++ cкм)", "Вверх",                 "Вверх",        "Сверху",           "" },
             {"0",          tostring(workingVolume), "0",            "+0, -0 (снять)",   ""       },
             {"- (-- cкм)", "Вниз",                  "Вниз",         "Снизу",            ""  },
-            {"",           "",                      "Последняя: 0", "Вых: 0",           "Ручной" },
+            {"",           "",                      " ",            "Вых: 0",           "Ручной" },
             {"0",          "0",                     "0",            "0",                "0" },
             {"0",          "0",                     "0",            "0",                "0" }
         }

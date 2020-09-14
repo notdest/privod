@@ -573,6 +573,11 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
             end
 
             lastErase = lastErase + updateInterval
+
+            if IsWindowClosed( metricsId) then
+                OnStop()
+            end
+
             sleep(updateInterval)
         end
     end

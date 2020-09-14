@@ -122,8 +122,12 @@
 
         local futPos = getFuturesHolding( firmId, tradingAccount , futures.sec , 0)
 
-
-        return futPos.totalnet-qty
+        if futPos == nil then
+            message("check firmId")
+            return 0
+        else
+            return futPos.totalnet-qty
+        end
     end
 
     function getEntrances()

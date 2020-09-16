@@ -1,5 +1,5 @@
 futures		= {	class 	= "SPBFUT",
-				sec 	= "SRU0",
+				sec 	= "SRZ0",
 				assets	= "SBRF",
 				volume 	= {
 					medium 	= 10,

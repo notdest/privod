@@ -49,9 +49,14 @@
         SetColor(controlId, 6, 5, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
     end
 
-    function setMiddle()
+    -- Отцентрировать отображение стаканов по фьючерсу
+    function center()
         quotes = getQuoteLevel2 ( futures.class , futures.sec)
-        middle = math.ceil(  (quotes.offer[1].price + quotes.bid[ math.floor(quotes.bid_count) ].price )/2  )
+        setMiddle( math.ceil(  (quotes.offer[1].price + quotes.bid[ math.floor(quotes.bid_count) ].price )/2  ) )
+    end
+
+    function setMiddle( newVal)
+        middle = newVal
         clearTrades()
         printQuotes()
         printQuotes2()

@@ -282,7 +282,7 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
             elseif col == 40 then                                                   -- стрелка вниз, вход по рынку
                 sellMarket( futures.class , futures.sec ,workingVolume)
             elseif col == 96 then                                                   -- нуль на панели слева, отцентрировать стакан
-                setMiddle()
+                center()
             elseif col == 27 then                                                   -- esc, снять лимитки и стопы
                 if lastStopId ~= 0 then
                     dropStop(futures.class, lastStopId )
@@ -332,6 +332,13 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
             elseif col == 53 then                                                   -- 5, установить объем
                 workingVolume = 15
                 SetCell(controlId, 2, 2, tostring(workingVolume) )
+            end
+
+        elseif msg == QTABLE_CHAR then  -- Символьные клавиши
+            if     col == 119 then                                                  -- W , прокрутить наверх
+                setMiddle(middle + 15)
+            elseif col == 115 then                                                  -- S , прокрутить вниз
+                setMiddle(middle - 15)
             end
         end
     end
@@ -563,7 +570,7 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
             addContango( quotesF.offer[1].price - quotesS.offer[1].price*100)
         end
 
-        setMiddle()                             -- Заполняем таблицу
+        center()                             -- Заполняем таблицу
         
         local lastErase = 0
         while isRun do

@@ -236,7 +236,7 @@
         local oldVal = GetCell(controlId,row,col)
         local color, qty
 
-            qty = tonumber(oldVal.image) + trade.qty
+            qty = ((oldVal == nil) and 0 or tonumber(oldVal.image)) + trade.qty
 
             SetCell(controlId,row,col, string.format("%d", qty) )
 

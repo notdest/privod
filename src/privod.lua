@@ -32,6 +32,9 @@ exitPrice       = 0
 workingVolume   = 1
 morningPos      = 0     -- баланс на начало сессии, для алгоритмов на основе таблицы сделок
 
+robotEnterUp    = 0
+robotEnterDown  = 0
+
 mark    = {
     buy     = 0,
     sell    = 0
@@ -94,6 +97,17 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
         if     class == futures.class and sec == futures.sec then
             printQuotes()
         elseif class == share.class   and sec == share.sec   then
+
+
+            quotes          = getQuoteLevel2 ( share.class , share.sec)
+            if      robotEnterUp   > 0 and  tonumber(quotes.offer[1].price) >= robotEnterUp then
+                buyMarket( futures.class , futures.sec ,workingVolume)
+                robotEnterUp    = 0
+            elseif  robotEnterDown > 0 and tonumber(quotes.bid[ math.floor(quotes.bid_count) ].price) <= robotEnterDown then
+                sellMarket( futures.class , futures.sec ,workingVolume)
+                robotEnterDown  = 0
+            end
+
             printQuotes2()
         end
     end
@@ -228,6 +242,21 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
                 exitPrice = middle + math.floor(rowsCount/2) - row
                 sellLimit(futures.class , futures.sec ,workingVolume, exitPrice)
                 SetCell(controlId, 4, 4, "Вых: "..exitPrice )
+            elseif col == 9 then
+                if (robotEnterUp == 0) and (robotEnterDown == 0) then
+                    local otherStopPrice  = math.floor(middle + math.floor(rowsCount/2) - row - contango + 0.5)/100
+                    local quotes = getQuoteLevel2 ( share.class , share.sec)
+
+                    if      otherStopPrice >= tonumber(quotes.offer[1].price) then
+                        robotEnterUp    = otherStopPrice
+                    elseif  otherStopPrice <= tonumber(quotes.bid[ math.floor(quotes.bid_count) ].price) then
+                        robotEnterDown  = otherStopPrice
+                    end
+                else
+                    robotEnterDown = 0
+                    robotEnterUp = 0
+                end
+                printQuotes2()
             end
         elseif msg == QTABLE_MBUTTONDOWN then
             local priceOfClick = middle + math.floor(rowsCount/2) - row
@@ -502,6 +531,31 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
                     SetColor(metricsId, index, 10, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
                     SetColor(metricsId, index, 9, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
                 end
+            end
+        end
+
+
+        if robotEnterUp ~= 0 then
+            local index     = endValue - math.floor(robotEnterUp * 100)
+            local endIndex  = index - 10
+
+            index       = math.min(index, rowsCount)
+            endIndex    = math.max(endIndex,1)
+
+            for i=endIndex,index do
+                SetColor(metricsId, i, 9, RGB(165, 0, 200), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+            end
+        end
+
+        if robotEnterDown ~= 0 then
+            local index     = endValue - math.floor(robotEnterDown * 100)
+            local endIndex  = index + 10
+
+            index       = math.max(index, 1)
+            endIndex    = math.min(endIndex,rowsCount)
+
+            for i=index, endIndex do
+                SetColor(metricsId, i, 9, RGB(165, 0, 200), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
             end
         end
     end

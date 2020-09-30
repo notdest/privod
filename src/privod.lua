@@ -296,10 +296,10 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
                 local quotes = getQuoteLevel2 ( futures.class , futures.sec)
                 if curPos > 0 then
                     exitPrice    = quotes.offer[1].price - 1
-                    sellLimit(futures.class , futures.sec ,math.abs(curPos), exitPrice)
+                    sellLimit(futures.class , futures.sec ,math.abs(curPos), math.floor(exitPrice))
                 elseif curPos < 0 then
                     exitPrice    = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
-                    buyLimit(futures.class , futures.sec ,math.abs(curPos), exitPrice)
+                    buyLimit(futures.class , futures.sec ,math.abs(curPos), math.floor(exitPrice))
                 end
                 SetCell(controlId, 4, 4, "Вых: "..exitPrice )
             elseif col == 46 then                                                   -- del, всё снять, всюду выйти

@@ -321,16 +321,16 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
                 if openBuys ~= 0 or openSells ~= 0 then
                     dropLimit(futures.class,futures.assets)
                 end
-            elseif col == 37 then                                                   -- (стрелка влево) - за€вка на выход, вне стакана
+            elseif col == 37 then                                                   -- (стрелка влево) - за€вка покупка над стаканом
                 local quotes = getQuoteLevel2 ( futures.class , futures.sec)
-                if curPos > 0 then
-                    exitPrice    = quotes.offer[1].price - 1
-                    sellLimit(futures.class , futures.sec ,math.abs(curPos), math.floor(exitPrice))
-                elseif curPos < 0 then
-                    exitPrice    = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
-                    buyLimit(futures.class , futures.sec ,math.abs(curPos), math.floor(exitPrice))
-                end
-                SetCell(controlId, 4, 4, "¬ых: "..exitPrice )
+                exitPrice    = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
+                buyLimit(futures.class , futures.sec ,workingVolume, math.floor(exitPrice))
+
+            elseif col == 39 then                                                   -- (стрелка вправо) - за€вка продажа под стаканом
+                local quotes = getQuoteLevel2 ( futures.class , futures.sec)
+                exitPrice    = quotes.offer[1].price - 1
+                sellLimit(futures.class , futures.sec ,workingVolume, math.floor(exitPrice))
+
             elseif col == 46 then                                                   -- del, всЄ сн€ть, всюду выйти
                 if lastStopId ~= 0 then
                     dropStop(futures.class, lastStopId )

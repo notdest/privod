@@ -306,10 +306,28 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
                 end
             end
         elseif msg == QTABLE_VKEY then                                                      -- Всякие клавиши
-            if     col == 38 then                                                   -- стрелка вверх, вход по рынку
+
+
+            if     col == 87 then                                                   -- "w", покупка по рынку
                 buyMarket( futures.class , futures.sec ,workingVolume)
-            elseif col == 40 then                                                   -- стрелка вниз, вход по рынку
+            elseif col == 83 then                                                   -- "s", продажа по рынку
                 sellMarket( futures.class , futures.sec ,workingVolume)
+            elseif col == 65 then                                                   -- "a", заявка покупка над стаканом
+                local quotes = getQuoteLevel2 ( futures.class , futures.sec)
+                exitPrice    = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
+                buyLimit(futures.class , futures.sec ,workingVolume, math.floor(exitPrice))
+            elseif col == 68 then                                                   -- "d", заявка продажа под стаканом
+                local quotes = getQuoteLevel2 ( futures.class , futures.sec)
+                exitPrice    = quotes.offer[1].price - 1
+                sellLimit(futures.class , futures.sec ,workingVolume, math.floor(exitPrice))
+
+
+            elseif col == 38 then                                                   -- стрелка вверх, прокрутить наверх
+                setMiddle(middle + 15)
+            elseif col == 40 then                                                   -- стрелка вниз,  прокрутить вниз
+                setMiddle(middle - 15)
+
+
             elseif col == 96 then                                                   -- нуль на панели слева, отцентрировать стакан
                 center()
             elseif col == 27 then                                                   -- esc, снять лимитки и стопы
@@ -321,16 +339,6 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
                 if openBuys ~= 0 or openSells ~= 0 then
                     dropLimit(futures.class,futures.assets)
                 end
-            elseif col == 37 then                                                   -- (стрелка влево) - заявка покупка над стаканом
-                local quotes = getQuoteLevel2 ( futures.class , futures.sec)
-                exitPrice    = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
-                buyLimit(futures.class , futures.sec ,workingVolume, math.floor(exitPrice))
-
-            elseif col == 39 then                                                   -- (стрелка вправо) - заявка продажа под стаканом
-                local quotes = getQuoteLevel2 ( futures.class , futures.sec)
-                exitPrice    = quotes.offer[1].price - 1
-                sellLimit(futures.class , futures.sec ,workingVolume, math.floor(exitPrice))
-
             elseif col == 46 then                                                   -- del, всё снять, всюду выйти
                 if lastStopId ~= 0 then
                     dropStop(futures.class, lastStopId )
@@ -346,6 +354,8 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
                 elseif curPos < 0 then
                     buyMarket( futures.class , futures.sec ,math.abs(curPos))
                 end
+
+
             elseif col == 49 then                                                   -- 1, установить объем
                 workingVolume = 1
                 SetCell(controlId, 2, 2, tostring(workingVolume) )
@@ -363,12 +373,6 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
                 SetCell(controlId, 2, 2, tostring(workingVolume) )
             end
 
-        elseif msg == QTABLE_CHAR then  -- Символьные клавиши
-            if     col == 119 then                                                  -- W , прокрутить наверх
-                setMiddle(middle + 15)
-            elseif col == 115 then                                                  -- S , прокрутить вниз
-                setMiddle(middle - 15)
-            end
         end
     end
 

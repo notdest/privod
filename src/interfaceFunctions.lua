@@ -1,3 +1,4 @@
+-- cp-1251 encoding, because it is windows
 
     function clearTrades()
         shiftOrders(share.volume)

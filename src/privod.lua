@@ -1,3 +1,5 @@
+-- cp-1251 encoding, because it is windows
+
 rowsCount   = 80    -- настройки таблицы с индикаторами
 
 updateInterval  = 300

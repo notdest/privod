@@ -1,4 +1,4 @@
-
+-- cp-1251 encoding, because it is windows
 
 function buyMarket(class, sec, count)
     local result    = ""

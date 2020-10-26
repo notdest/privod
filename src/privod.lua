@@ -16,8 +16,8 @@ colors  = {
 
 
 dofile (getScriptPath() .. "\\src\\tradingFunctions.lua")
+dofile (getScriptPath() .. "\\src\\controlTable.lua")
 
-controlId = nil     -- айдишники таблиц
 metricsId = nil
 
 lastStop        = 0
@@ -49,14 +49,14 @@ isRun   = true
 dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
 
     function OnInit()
-        morningPos = getMorningPos()
+        morningPos      = getMorningPos()
+        controlTable    = control:new(colors)
     end
 
     function OnStop()
         isRun = false
-        if controlId ~= nil then
-            DestroyTable(controlId)
-        end
+        controlTable:close()
+
         if metricsId ~= nil then
             DestroyTable(metricsId)
         end
@@ -103,10 +103,10 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
 
             quotes          = getQuoteLevel2 ( share.class , share.sec)
             if      robotEnterUp   > 0 and  tonumber(quotes.offer[1].price) >= robotEnterUp then
-                buyMarket( futures.class , futures.sec ,workingVolume)
+                buyFuturesMarket()
                 robotEnterUp    = 0
             elseif  robotEnterDown > 0 and tonumber(quotes.bid[ math.floor(quotes.bid_count) ].price) <= robotEnterDown then
-                sellMarket( futures.class , futures.sec ,workingVolume)
+                sellFuturesMarket()
                 robotEnterDown  = 0
             end
 
@@ -119,7 +119,7 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
             if reply.trans_id == 108 then       -- стопы с таким id, надо заменить на константы
                 stopQuantity = reply.quantity
                 lastStopId   = reply.order_num
-                SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
+                controlTable:setStop(stopQuantity)
             end
         end
     end
@@ -135,98 +135,24 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
             openSells   = futPos.opensells
 
             if curPos == 0 then
-                if lastStopId ~= 0 then
-                    dropStop(futures.class, lastStopId )
-                    displayNoStop()
-                end
+                dropFuturesStop()
 
                 if (openBuys ~= 0 or openSells ~= 0) and lastPos ~= curPos then
                     dropLimit(futures.class,futures.assets)
                 end
 
-                SetCell(controlId, 4, 1, string.format("%01.2f", getProfit(1.99,0.5) ) )
-
-                SetColor(controlId, 2, 3, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-            elseif curPos > 0 then
-                SetColor(controlId, 2, 3, colors.green.heavy, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-
-            elseif curPos < 0 then
-                SetColor(controlId, 2, 3, colors.red.heavy, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+                calculateProfit()
             end
 
-            SetCell(controlId, 2, 3, tostring(curPos) )
-            SetCell(controlId, 2, 4, "+"..openBuys..", -"..openSells.." (снять)" )
+            controlTable:setPosition(curPos, openBuys, openSells)
 
             if openBuys == 0 and openSells == 0 then
                 exitPrice = 0
-                SetCell(controlId, 4, 4, "Вых: "..exitPrice )
+                controlTable:setExitPrice(exitPrice)
             end
         end
     end
 
-    function controlCallback(t_id, msg, row, col)                                           -- функция, которая обрабатывает таблицу управления
-        if     msg == QTABLE_LBUTTONDOWN then
-
-            if     col == 1 then                                                                -- Контанго
-                if     row == 1 then
-                    addContango(1)
-                elseif row == 3 then
-                    addContango(-1)
-                elseif row == 4 then
-                    SetCell(controlId, 4, 1, string.format("%01.2f", getProfit(1.99,0.5) ) )
-                end
-
-
-            elseif col == 2 then                                                                -- Рабочий объем
-                if     row == 1 then
-                    workingVolume = workingVolume + 1
-                elseif row == 3 then
-                    workingVolume = workingVolume - 1
-                end
-                SetCell(controlId, 2, 2, tostring(workingVolume) )
-
-
-            elseif col == 3 then                                                                -- Рыночные
-                if     row == 1 then
-                    buyMarket( futures.class , futures.sec ,workingVolume)
-                elseif row == 3 then
-                    sellMarket( futures.class , futures.sec ,workingVolume)
-                end
-
-
-            elseif col == 4 then
-                if     row == 1 then                                                            -- Лимитки
-                    local quotes = getQuoteLevel2 ( futures.class , futures.sec)
-                    exitPrice    = quotes.offer[1].price - 1
-                    sellLimit(futures.class , futures.sec ,workingVolume, exitPrice)
-                    SetCell(controlId, 4, 4, "Вых: "..exitPrice )
-                elseif row == 2 then
-                    dropLimit(futures.class,futures.assets)
-                elseif row == 3 then
-                    local quotes = getQuoteLevel2 ( futures.class , futures.sec)
-                    exitPrice    = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
-                    buyLimit(futures.class , futures.sec ,workingVolume, exitPrice)
-                    SetCell(controlId, 4, 4, "Вых: "..exitPrice )
-                end
-
-
-            elseif col == 5 then                                                                -- Стопы
-                if     row == 2 then
-                    dropStop(futures.class, lastStopId )
-                    displayNoStop()
-                end
-            end
-
-        elseif msg == QTABLE_MBUTTONDOWN then
-            if     col == 1 then
-                if     row == 1 then
-                    addContango(10)
-                elseif row == 3 then
-                    addContango(-10)
-                end
-            end
-        end
-    end
 
 
     function metricsCallback(t_id, msg, row, col)                                           -- функция, которая обрабатывает таблицу с метриками
@@ -235,7 +161,7 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
             if    col == 3 then
                 exitPrice    = middle + math.floor(rowsCount/2) - row
                 buyLimit(futures.class , futures.sec ,workingVolume, exitPrice)
-                SetCell(controlId, 4, 4, "Вых: "..exitPrice )
+                controlTable:setExitPrice(exitPrice)
             elseif col == 4 then
                 if lastStopId == 0 then
                     lastStop  = middle + math.floor(rowsCount/2) - row
@@ -243,7 +169,7 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
             elseif col == 5 then
                 exitPrice = middle + math.floor(rowsCount/2) - row
                 sellLimit(futures.class , futures.sec ,workingVolume, exitPrice)
-                SetCell(controlId, 4, 4, "Вых: "..exitPrice )
+                controlTable:setExitPrice(exitPrice)
             elseif col == 9 then
                 if (robotEnterUp == 0) and (robotEnterDown == 0) then
                     local otherStopPrice  = math.floor(middle + math.floor(rowsCount/2) - row - contango + 0.5)/100
@@ -269,8 +195,7 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
                 elseif (priceOfClick >= lastStop and priceOfClick <= lastRealStop)
                     or (priceOfClick <= lastStop and priceOfClick >= lastRealStop) then
 
-                    dropStop(futures.class, lastStopId )
-                    displayNoStop()
+                    dropFuturesStop()
                 end
 
             elseif col == 3 then                -- ставим метку в покупках
@@ -311,18 +236,15 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
 
 
             if     col == 87 then                                                   -- "w", покупка по рынку
-                buyMarket( futures.class , futures.sec ,workingVolume)
+                buyFuturesMarket()
             elseif col == 83 then                                                   -- "s", продажа по рынку
-                sellMarket( futures.class , futures.sec ,workingVolume)
+                sellFuturesMarket()
             elseif col == 65 then                                                   -- "a", заявка покупка над стаканом
                 local quotes = getQuoteLevel2 ( futures.class , futures.sec)
                 exitPrice    = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
                 buyLimit(futures.class , futures.sec ,workingVolume, math.floor(exitPrice))
             elseif col == 68 then                                                   -- "d", заявка продажа под стаканом
-                local quotes = getQuoteLevel2 ( futures.class , futures.sec)
-                exitPrice    = quotes.offer[1].price - 1
-                sellLimit(futures.class , futures.sec ,workingVolume, math.floor(exitPrice))
-
+                sellFuturesSpread()
 
             elseif col == 38 then                                                   -- стрелка вверх, прокрутить наверх
                 setMiddle(middle + 15)
@@ -333,19 +255,13 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
             elseif col == 96 then                                                   -- нуль на панели слева, отцентрировать стакан
                 center()
             elseif col == 27 then                                                   -- esc, снять лимитки и стопы
-                if lastStopId ~= 0 then
-                    dropStop(futures.class, lastStopId )
-                    displayNoStop()
-                end
+                dropFuturesStop()
 
                 if openBuys ~= 0 or openSells ~= 0 then
                     dropLimit(futures.class,futures.assets)
                 end
             elseif col == 46 then                                                   -- del, всё снять, всюду выйти
-                if lastStopId ~= 0 then
-                    dropStop(futures.class, lastStopId )
-                    displayNoStop()
-                end
+                dropFuturesStop()
 
                 if openBuys ~= 0 or openSells ~= 0 then
                     dropLimit(futures.class,futures.assets)
@@ -359,20 +275,15 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
 
 
             elseif col == 49 then                                                   -- 1, установить объем
-                workingVolume = 1
-                SetCell(controlId, 2, 2, tostring(workingVolume) )
+                setWorkingVolume( 1 )
             elseif col == 50 then                                                   -- 2, установить объем
-                workingVolume = 2
-                SetCell(controlId, 2, 2, tostring(workingVolume) )
+                setWorkingVolume( 2 )
             elseif col == 51 then                                                   -- 3, установить объем
-                workingVolume = 5
-                SetCell(controlId, 2, 2, tostring(workingVolume) )
+                setWorkingVolume( 5 )
             elseif col == 52 then                                                   -- 4, установить объем
-                workingVolume = 10
-                SetCell(controlId, 2, 2, tostring(workingVolume) )
+                setWorkingVolume( 10 )
             elseif col == 53 then                                                   -- 5, установить объем
-                workingVolume = 15
-                SetCell(controlId, 2, 2, tostring(workingVolume) )
+                setWorkingVolume( 15 )
             end
 
         end
@@ -392,10 +303,10 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
             local row   = middle + math.floor(rowsCount/2 - trade.price * 100) - contango
             if bit.band( trade.flags, 1) ~= 0 then
                 addTrade(trade,row,7,share.volume)
-                addTradeToControl(trade,5,5,share.volume)
+                controlTable:addTradeToControl(trade,5,5,share.volume)
             else
                 addTrade(trade,row,6,share.volume)
-                addTradeToControl(trade,6,5,share.volume)
+                controlTable:addTradeToControl(trade,6,5,share.volume)
             end
         end
     end
@@ -569,36 +480,7 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
 
 
     function main()
-        controlId = AllocTable()                                                            -- Создаем таблицу с элементами управления
-        AddColumn(controlId, 1, "Контанго",         true, QTABLE_CACHED_STRING_TYPE, 12)
-        AddColumn(controlId, 2, "Рабочий объем",    true, QTABLE_CACHED_STRING_TYPE, 17)
-        AddColumn(controlId, 3, "Войти по рынку",   true, QTABLE_CACHED_STRING_TYPE, 17)
-        AddColumn(controlId, 4, "Выйти",            true, QTABLE_CACHED_STRING_TYPE, 12)
-        AddColumn(controlId, 5, "Стопы",            true, QTABLE_CACHED_STRING_TYPE, 12)
-        CreateWindow(controlId)
-
-
-        data = {
-            {"+ (++ cкм)", "Вверх",                 "Вверх",        "Сверху",           "" },
-            {"0",          tostring(workingVolume), "0",            "+0, -0 (снять)",   ""       },
-            {"- (-- cкм)", "Вниз",                  "Вниз",         "Снизу",            ""  },
-            {"",           "",                      " ",            "Вых: 0",           "Ручной" },
-            {"0",          "0",                     "0",            "0",                "0" },
-            {"0",          "0",                     "0",            "0",                "0" }
-        }
-
-        for k, v in pairs(data) do
-            row = InsertRow(controlId, -1)
-            SetCell(controlId, row, 1, v[1])
-            SetCell(controlId, row, 2, v[2])
-            SetCell(controlId, row, 3, v[3])
-            SetCell(controlId, row, 4, v[4])
-            SetCell(controlId, row, 5, v[5])
-        end
-
-        SetWindowCaption(controlId, "Управление")
-        SetTableNotificationCallback(controlId, controlCallback)
-
+        controlTable:init(workingVolume)
 
         metricsId = AllocTable()                                                            -- Создаем таблицу с стаканом
         AddColumn(metricsId, 1, "пок",      true, QTABLE_INT_TYPE, 7)
@@ -621,7 +503,6 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
         SetWindowCaption(metricsId, "Стаканы")
         SetTableNotificationCallback(metricsId, metricsCallback)
 
-        SetWindowPos(controlId,280,550,470,140)
         SetWindowPos(metricsId,749,0,555,893)
 
         local quotesF = getQuoteLevel2 ( futures.class , futures.sec)

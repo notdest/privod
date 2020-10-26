@@ -1,7 +1,7 @@
 -- cp-1251 encoding, because it is windows
 
     function clearTrades()
-        shiftOrders(share.volume)
+        controlTable:shiftOrders(share.volume)
         for i = 1, rowsCount do
             SetCell(metricsId, i, 1, '' )
             SetCell(metricsId, i, 2, '' )
@@ -15,40 +15,7 @@
         end
     end
 
-    function shiftOrders( volumes )
-        local color, qty
 
-        for i=1,4 do
-            qty = tonumber(GetCell(controlId,5,i+1).image)
-
-            color   = colors.red.heavy
-            if      qty < volumes.medium    then
-                color = colors.red.light
-            elseif  qty < volumes.high      then
-                color = colors.red.medium
-            end
-            SetCell(controlId,5,i, string.format("%d", qty) )
-            SetColor(controlId, 5, i, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-
-
-            qty = tonumber(GetCell(controlId,6,i+1).image)
-            color   = colors.green.heavy
-            if      qty < volumes.medium    then
-                color = colors.green.light
-            elseif  qty < volumes.high      then
-                color = colors.green.medium
-            end
-            SetCell(controlId,6,i, string.format("%d", qty) )
-            SetColor(controlId, 6, i, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-        end
-
-
-        SetCell(controlId,5,5, '0' )
-        SetCell(controlId,6,5, '0' )
-
-        SetColor(controlId, 5, 5, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-        SetColor(controlId, 6, 5, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-    end
 
     -- Отцентрировать отображение стаканов по фьючерсу
     function center()
@@ -63,11 +30,54 @@
         printQuotes2()
     end
 
+    function addWorkingVolume(step)
+        workingVolume = workingVolume + step
+        controlTable:setWorkingVolume(workingVolume)
+    end
+
+    function setWorkingVolume( val )
+        workingVolume = val
+        controlTable:setWorkingVolume(workingVolume)
+    end
+
     function addContango(step)
         contango = contango + step
-        SetCell(controlId, 2, 1, tostring(contango) )
+        controlTable:setContango(contango)
         printQuotes2()
         clearTrades()
+    end
+
+    function buyFuturesMarket()
+        buyMarket( futures.class , futures.sec ,workingVolume)
+    end
+
+    function sellFuturesMarket()
+        sellMarket( futures.class , futures.sec ,workingVolume)
+    end
+
+    function sellFuturesSpread()
+        local quotes = getQuoteLevel2 ( futures.class , futures.sec)
+        exitPrice    = quotes.offer[1].price - 1
+        sellLimit(futures.class , futures.sec ,workingVolume, string.format("%u", exitPrice ) )
+        controlTable:setExitPrice(exitPrice)
+    end
+
+    function buyFuturesSpread()
+        local quotes = getQuoteLevel2 ( futures.class , futures.sec)
+        exitPrice    = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
+        buyLimit(futures.class , futures.sec ,workingVolume, string.format("%u", exitPrice ))
+        controlTable:setExitPrice(exitPrice)
+    end
+
+    function dropFuturesLimit()
+        dropLimit(futures.class,futures.assets)
+    end
+
+    function dropFuturesStop()
+        if lastStopId ~= 0 then
+            dropStop(futures.class, lastStopId )
+            displayNoStop()
+        end
     end
 
     function displayNoStop()
@@ -75,7 +85,11 @@
         lastStopId   = 0
         lastStop     = 0
         lastRealStop = 0
-        SetCell(controlId, 2, 5, tostring(stopQuantity.." (снять)") )
+        controlTable:setStop(stopQuantity)
+    end
+
+    function calculateProfit()
+        controlTable:setProfit(getProfit(1.99,0.5))
     end
 
     function getProfit( buyCommission,sellComission )
@@ -230,36 +244,6 @@
 
                 SetColor(metricsId, row, col, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
         end
-    end
-
-
-    function addTradeToControl( trade,row,col,volumes )
-        local oldVal = GetCell(controlId,row,col)
-        local color, qty
-
-            qty = ((oldVal == nil) and 0 or tonumber(oldVal.image)) + trade.qty
-
-            SetCell(controlId,row,col, string.format("%d", qty) )
-
-            if bit.band( trade.flags, 1) ~= 0 then
-                color   = colors.red.heavy
-
-                if      qty < volumes.medium    then
-                    color = colors.red.light
-                elseif  qty < volumes.high      then
-                    color = colors.red.medium
-                end
-            else
-                color   = colors.green.heavy
-
-                if      qty < volumes.medium    then
-                    color = colors.green.light
-                elseif  qty < volumes.high      then
-                    color = colors.green.medium
-                end
-            end
-
-            SetColor(controlId, row, col, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
     end
 
 

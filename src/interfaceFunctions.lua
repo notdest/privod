@@ -2,32 +2,31 @@
 
     function clearTrades()
         controlTable:shiftOrders(share.volume)
-        for i = 1, rowsCount do
-            SetCell(metricsId, i, 1, '' )
-            SetCell(metricsId, i, 2, '' )
-            SetCell(metricsId, i, 6, '' )
-            SetCell(metricsId, i, 7, '' )
-
-            SetColor(metricsId, i, 1, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-            SetColor(metricsId, i, 2, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-            SetColor(metricsId, i, 6, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-            SetColor(metricsId, i, 7, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-        end
+        metricsTable:clearTrades()
     end
 
 
 
     -- Отцентрировать отображение стаканов по фьючерсу
     function center()
-        quotes = getQuoteLevel2 ( futures.class , futures.sec)
-        setMiddle( math.ceil(  (quotes.offer[1].price + quotes.bid[ math.floor(quotes.bid_count) ].price )/2  ) )
+        local quotes        = getQuoteLevel2 ( futures.class , futures.sec)
+        local bidCount      = math.floor(quotes.bid_count)
+        local offerCount    = math.floor(quotes.offer_count)
+
+        if offerCount >= 1 and bidCount >= 1 then
+            setMiddle( math.ceil(  (quotes.offer[1].price + quotes.bid[ bidCount ].price )/2  ) )
+        elseif offerCount >= 1 then
+            setMiddle( math.ceil( quotes.offer[1].price ) )
+        elseif bidCount >= 1 then
+            setMiddle( math.ceil( quotes.bid[ bidCount ].price ) )
+        end
     end
 
     function setMiddle( newVal)
         middle = newVal
         clearTrades()
-        printQuotes()
-        printQuotes2()
+        metricsTable:printQuotes()
+        metricsTable:printQuotes2()
     end
 
     function addWorkingVolume(step)
@@ -43,7 +42,7 @@
     function addContango(step)
         contango = contango + step
         controlTable:setContango(contango)
-        printQuotes2()
+        metricsTable:printQuotes2()
         clearTrades()
     end
 
@@ -205,45 +204,6 @@
         end
 
         return res
-    end
-
-
-    function addTrade( trade,row,col,volumes )
-        if row >= 1 and row <= rowsCount then
-            local oldVal = GetCell(metricsId,row,col)
-            local color, qty
-
-                if oldVal.image == "" then
-                    qty = trade.qty
-                else
-                    qty = tonumber(oldVal.image) + trade.qty
-                end
-                SetCell(metricsId,row,col, string.format("%d", qty) )
-
-                if bit.band( trade.flags, 1) ~= 0 then
-                    Highlight(metricsId, row, col, colors.red.heavy , QTABLE_DEFAULT_COLOR , 200)
-
-                    color   = colors.red.heavy
-
-                    if      qty < volumes.medium    then
-                        color = colors.red.light
-                    elseif  qty < volumes.high      then
-                        color = colors.red.medium
-                    end
-                else
-                    Highlight(metricsId, row, col, colors.green.heavy, QTABLE_DEFAULT_COLOR , 200)
-
-                    color   = colors.green.heavy
-
-                    if      qty < volumes.medium    then
-                        color = colors.green.light
-                    elseif  qty < volumes.high      then
-                        color = colors.green.medium
-                    end
-                end
-
-                SetColor(metricsId, row, col, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-        end
     end
 
 

@@ -34,9 +34,6 @@ exitPrice       = 0
 workingVolume   = 1
 morningPos      = 0     -- баланс на начало сессии, дл€ алгоритмов на основе таблицы сделок
 
-robotEnterUp    = 0
-robotEnterDown  = 0
-
 mark    = {
     buy     = 0,
     sell    = 0
@@ -99,13 +96,10 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
         elseif class == share.class   and sec == share.sec   then
 
 
-            quotes          = getQuoteLevel2 ( share.class , share.sec)
-            if      robotEnterUp   > 0 and  tonumber(quotes.offer[1].price) >= robotEnterUp then
-                buyFuturesMarket()
-                robotEnterUp    = 0
-            elseif  robotEnterDown > 0 and tonumber(quotes.bid[ math.floor(quotes.bid_count) ].price) <= robotEnterDown then
-                sellFuturesMarket()
-                robotEnterDown  = 0
+            if robotEnterUp > 0 or robotEnterDown > 0 then
+                quotes  = getQuoteLevel2 ( share.class , share.sec)
+                sharePriceReached(tonumber(quotes.offer[1].price))
+                sharePriceReached(tonumber(quotes.bid[ math.floor(quotes.bid_count) ].price))
             end
 
             metricsTable:printQuotes2()
@@ -155,21 +149,45 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
 
     function OnAllTrade( trade )                                                            -- ѕрилетела обезличенна€ сделка
         if     trade.class_code == futures.class and trade.sec_code == futures.sec then
-            local row   = middle + math.floor(rowsCount/2) - trade.price
+
+
+            local row   = middle + math.floor(rowsCount/2) - trade.price            -- ¬от здесь мы слишком много знаем, лучше это спр€тать в класс таблицы
             if bit.band( trade.flags, 1) ~= 0 then
                 metricsTable:addTrade(trade,row,2,futures.volume )
             else
                 metricsTable:addTrade(trade,row,1,futures.volume)
             end
+
+
         elseif trade.class_code == share.class   and trade.sec_code == share.sec then
+            sharePriceReached(trade.price)
+
+
             local row   = middle + math.floor(rowsCount/2 - trade.price * 100) - contango
-            if bit.band( trade.flags, 1) ~= 0 then
+            if bit.band( trade.flags, 1) ~= 0 then                                  -- ¬от здесь мы слишком много знаем, лучше это спр€тать в класс таблицы
                 metricsTable:addTrade(trade,row,7,share.volume)
                 controlTable:addTradeToControl(trade,5,5,share.volume)
             else
                 metricsTable:addTrade(trade,row,6,share.volume)
                 controlTable:addTradeToControl(trade,6,5,share.volume)
             end
+
+
+        end
+    end
+
+
+
+    robotEnterUp    = 0
+    robotEnterDown  = 0
+
+    function sharePriceReached(price)
+        if      robotEnterUp   > 0 and price >= robotEnterUp then
+            buyFuturesMarket()
+            robotEnterUp    = 0
+        elseif  robotEnterDown > 0 and price <= robotEnterDown then
+            sellFuturesMarket()
+            robotEnterDown  = 0
         end
     end
 

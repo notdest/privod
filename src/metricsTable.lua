@@ -164,7 +164,7 @@ function metrics:addTrade( trade,row,col,volumes )
 
                 color   = self.colors.red.heavy
 
-                if      qty < volumes.medium    then
+                if      qty < volumes.medium    then    -- Определение цвета тоже можно вынести
                     color = self.colors.red.light
                 elseif  qty < volumes.high      then
                     color = self.colors.red.medium
@@ -389,7 +389,7 @@ function metrics:init()
     )
 
     SetWindowPos(self.tableId,
-        749,    -- left
+        1349,    -- left
         0,    	-- top
         555,    -- width
         893)    -- height

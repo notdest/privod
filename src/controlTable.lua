@@ -213,8 +213,8 @@ function control:init(vol)
     )
 
     SetWindowPos(self.tableId,
-        280,    -- left
-        550,    -- top
+        880,    -- left
+        630,    -- top
         470,    -- width
         140)    -- height
 end

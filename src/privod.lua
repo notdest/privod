@@ -184,10 +184,10 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
     function sharePriceReached(price)
         if      robotEnterUp   > 0 and price >= robotEnterUp then
             buyFuturesMarket()
-            robotEnterUp    = 0
+            dropSharesStop()
         elseif  robotEnterDown > 0 and price <= robotEnterDown then
             sellFuturesMarket()
-            robotEnterDown  = 0
+            dropSharesStop()
         end
     end
 

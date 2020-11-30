@@ -38,8 +38,7 @@ function metrics:handleEvent(t_id, msg, row, col)
                     robotEnterDown  = otherStopPrice
                 end
             else
-                robotEnterDown = 0
-                robotEnterUp = 0
+                dropSharesStop()
             end
             self:printQuotes2()
         end
@@ -113,12 +112,17 @@ function metrics:handleEvent(t_id, msg, row, col)
             center()
         elseif col == 27 then                                                   -- esc, снять лимитки и стопы
             dropFuturesStop()
+            dropSharesStop()
 
             if openBuys ~= 0 or openSells ~= 0 then
                 dropLimit(futures.class,futures.assets)
             end
+
+            self:printQuotes2()
+            self:printQuotes()
         elseif col == 46 then                                                   -- del, всё снять, всюду выйти
             dropFuturesStop()
+            dropSharesStop()
 
             if openBuys ~= 0 or openSells ~= 0 then
                 dropLimit(futures.class,futures.assets)
@@ -129,6 +133,9 @@ function metrics:handleEvent(t_id, msg, row, col)
             elseif curPos < 0 then
                 buyMarket( futures.class , futures.sec ,math.abs(curPos))
             end
+
+            self:printQuotes2()
+            self:printQuotes()
 
 
         elseif col == 49 then                                                   -- 1, установить объем

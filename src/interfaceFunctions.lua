@@ -79,6 +79,11 @@
         end
     end
 
+    function dropSharesStop()
+        robotEnterUp    = 0
+        robotEnterDown  = 0
+    end
+
     function displayNoStop()
         stopQuantity = 0
         lastStopId   = 0

@@ -181,7 +181,7 @@ function metrics:addTrade( trade,row,col,volumes )
                 end
             end
 
-            SetColor(self.tableId, row, col, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+            self:color(row,col,color)
     end
 end
 
@@ -196,9 +196,9 @@ function metrics:printQuotes()
         SetCell(self.tableId, i, 3, '' )
         SetCell(self.tableId, i, 5, '' )
 
-        SetColor(self.tableId, i, 3, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-        SetColor(self.tableId, i, 4, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-        SetColor(self.tableId, i, 5, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+        self:defaultColor(i, 3)
+        self:defaultColor(i, 4)
+        self:defaultColor(i, 5)
     end
 
     for k, v in pairs(quotes.bid) do -- Сбоит иногда, нужно условие
@@ -213,8 +213,8 @@ function metrics:printQuotes()
                 end
 
             SetCell(self.tableId,  index, 3, tostring( v.quantity) )
-            SetColor(self.tableId, index, 3, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-            SetColor(self.tableId, index, 4, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+            self:color(index, 3, color)
+            self:color(index, 4, color)
         end
     end
 
@@ -230,37 +230,38 @@ function metrics:printQuotes()
                 end
 
             SetCell(self.tableId,  index, 5, tostring( v.quantity) )
-            SetColor(self.tableId, index, 5, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-            SetColor(self.tableId, index, 4, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+
+            self:color(index, 5, color)
+            self:color(index, 4, color)
         end
     end
 
 
     local exitIndex = endValue - exitPrice
     if exitIndex > 0 and exitIndex <= rowsCount then                                        -- подсвечиваем выход
-        SetColor(self.tableId, exitIndex, 4, RGB(0, 219, 216), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+        self:color(exitIndex, 4, RGB(0, 219, 216))
     end
 
     local markIndex = {buy = endValue - mark.buy , sell = endValue - mark.sell}             -- подсвечиваем пометки
     if markIndex.buy > 0 and markIndex.buy <= rowsCount then
-        SetColor(self.tableId, markIndex.buy, 3, RGB(177, 195, 59), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+        self:color(markIndex.buy, 3, RGB(177, 195, 59))
     end
     if markIndex.sell > 0 and markIndex.sell <= rowsCount then
-        SetColor(self.tableId, markIndex.sell, 5, RGB(177, 195, 59), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+        self:color(markIndex.sell, 5, RGB(177, 195, 59))
     end
 
     local stopIndexLow  = endValue - math.max(lastStop, lastRealStop)                       -- подсвечиваем стоп
     local stopIndexHigh = endValue - math.min(lastStop, lastRealStop)
     if stopIndexLow > 0 and stopIndexLow <= rowsCount and stopIndexHigh > 0 and stopIndexHigh <= rowsCount then
         for i = stopIndexLow, stopIndexHigh do
-            SetColor(self.tableId, i, 4, RGB(165, 0, 200), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+            self:color(i, 4, RGB(165, 0, 200))
         end
     end
 
     for k, v in pairs(entrances) do
         index   = endValue - v
         if index > 0 and index <= rowsCount then
-            SetColor(self.tableId, index, 4, RGB(177, 195, 59), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+            self:color(index, 4, RGB(177, 195, 59))
         end
     end
 end
@@ -277,9 +278,9 @@ function metrics:printQuotes2()
         SetCell(self.tableId, i, 8, '' )
         SetCell(self.tableId, i, 10, '' )
 
-        SetColor(self.tableId, i, 8,  QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-        SetColor(self.tableId, i, 9,  QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-        SetColor(self.tableId, i, 10, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+        self:defaultColor(i, 8)
+        self:defaultColor(i, 9)
+        self:defaultColor(i, 10)
     end
 
 
@@ -296,8 +297,8 @@ function metrics:printQuotes2()
                 end
 
                 SetCell(self.tableId,  index, 8, tostring( v.quantity) )
-                SetColor(self.tableId, index, 8, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-                SetColor(self.tableId, index, 9, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+                self:color(index, 8, color)
+                self:color(index, 9, color)
             end
         end
     end
@@ -315,8 +316,8 @@ function metrics:printQuotes2()
                 end
 
                 SetCell(self.tableId,  index, 10, tostring( v.quantity) )
-                SetColor(self.tableId, index, 10, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-                SetColor(self.tableId, index, 9, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+                self:color(index, 10, color)
+                self:color(index,  9, color)
             end
         end
     end
@@ -330,7 +331,7 @@ function metrics:printQuotes2()
         endIndex    = math.max(endIndex,1)
 
         for i=endIndex,index do
-            SetColor(self.tableId, i, 9, RGB(165, 0, 200), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+            self:color(i, 9, RGB(165, 0, 200))
         end
     end
 
@@ -342,7 +343,7 @@ function metrics:printQuotes2()
         endIndex    = math.min(endIndex,rowsCount)
 
         for i=index, endIndex do
-            SetColor(self.tableId, i, 9, RGB(165, 0, 200), QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+            self:color(i, 9, RGB(165, 0, 200))
         end
     end
 end
@@ -354,10 +355,10 @@ function metrics:clearTrades()
         SetCell(self.tableId, i, 6, '' )
         SetCell(self.tableId, i, 7, '' )
 
-        SetColor(self.tableId, i, 1, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-        SetColor(self.tableId, i, 2, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-        SetColor(self.tableId, i, 6, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
-        SetColor(self.tableId, i, 7, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+        self:defaultColor(i, 1)
+        self:defaultColor(i, 2)
+        self:defaultColor(i, 6)
+        self:defaultColor(i, 7)
     end
 end 
 
@@ -405,4 +406,14 @@ function metrics:close()
     if self.tableId ~= nil then
         DestroyTable(self.tableId)
     end
+end
+
+-------------------------------------дальше типо приватные методы
+
+function metrics:defaultColor(row,col)
+    SetColor(self.tableId, row, col, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+end
+
+function metrics:color(row,col,color)
+    SetColor(self.tableId, row, col, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
 end

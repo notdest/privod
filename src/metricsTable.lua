@@ -161,24 +161,10 @@ function metrics:addTrade( trade,row,col,volumes )
 
             if bit.band( trade.flags, 1) ~= 0 then
                 Highlight(self.tableId, row, col, self.colors.red.heavy , QTABLE_DEFAULT_COLOR , 200)
-
-                color   = self.colors.red.heavy
-
-                if      qty < volumes.medium    then    -- ќпределение цвета тоже можно вынести
-                    color = self.colors.red.light
-                elseif  qty < volumes.high      then
-                    color = self.colors.red.medium
-                end
+                local color = self:chooseColor(self.colors.red, volumes, qty)
             else
                 Highlight(self.tableId, row, col, self.colors.green.heavy, QTABLE_DEFAULT_COLOR , 200)
-
-                color   = self.colors.green.heavy
-
-                if      qty < volumes.medium    then
-                    color = self.colors.green.light
-                elseif  qty < volumes.high      then
-                    color = self.colors.green.medium
-                end
+                local color = self:chooseColor(self.colors.green, volumes, qty)
             end
 
             self:color(row,col,color)
@@ -204,13 +190,7 @@ function metrics:printQuotes()
     for k, v in pairs(quotes.bid) do -- —боит иногда, нужно условие
         local index = endValue - v.price
         if index >= 1 and index <= rowsCount then
-
-                local color = self.colors.green.heavy
-                if tonumber(v.quantity) < futures.volume.medium then
-                    color = self.colors.green.light
-                elseif tonumber(v.quantity) < futures.volume.high then
-                    color = self.colors.green.medium
-                end
+            local color = self:chooseColor(self.colors.green, futures.volume, v.quantity)
 
             SetCell(self.tableId,  index, 3, tostring( v.quantity) )
             self:color(index, 3, color)
@@ -221,13 +201,7 @@ function metrics:printQuotes()
     for k, v in pairs(quotes.offer) do
         index   = endValue - v.price
         if index >= 1 and index <= rowsCount then
-
-                local color = self.colors.red.heavy
-                if tonumber(v.quantity) < futures.volume.medium then
-                    color = self.colors.red.light
-                elseif tonumber(v.quantity) < futures.volume.high then
-                    color = self.colors.red.medium
-                end
+            local color = self:chooseColor(self.colors.red, futures.volume, v.quantity)
 
             SetCell(self.tableId,  index, 5, tostring( v.quantity) )
 
@@ -288,13 +262,7 @@ function metrics:printQuotes2()
         for k, v in pairs(quotes.bid) do
             local index = endValue - math.floor(v.price * 100)
             if index >= 1 and index <= rowsCount then
-
-                local color = self.colors.green.heavy
-                if tonumber(v.quantity) < share.volume.medium then
-                    color = self.colors.green.light
-                elseif tonumber(v.quantity) < share.volume.high then
-                    color = self.colors.green.medium
-                end
+                local color = self:chooseColor(self.colors.green, share.volume, v.quantity)
 
                 SetCell(self.tableId,  index, 8, tostring( v.quantity) )
                 self:color(index, 8, color)
@@ -307,13 +275,7 @@ function metrics:printQuotes2()
         for k, v in pairs(quotes.offer) do
             index   = endValue - math.floor(v.price * 100)
             if index >= 1 and index <= rowsCount then
-
-                local color = self.colors.red.heavy
-                if tonumber(v.quantity) < share.volume.medium then
-                    color = self.colors.red.light
-                elseif tonumber(v.quantity) < share.volume.high then
-                    color = self.colors.red.medium
-                end
+                local color = self:chooseColor(self.colors.red, share.volume, v.quantity)
 
                 SetCell(self.tableId,  index, 10, tostring( v.quantity) )
                 self:color(index, 10, color)
@@ -416,4 +378,16 @@ end
 
 function metrics:color(row,col,color)
     SetColor(self.tableId, row, col, color, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)
+end
+
+function metrics:chooseColor( color,volume,quantity )
+    local ret = color.heavy
+
+    if tonumber(quantity) < volume.medium then
+        ret = color.light
+    elseif tonumber(quantity) < volume.high then
+        ret = color.medium
+    end
+
+    return ret
 end

@@ -105,7 +105,9 @@
         for i = 0,getNumberOf('trades') - 1 do
             item    = getItem('trades',i)
 
-            if item.class_code == futures.class and item.sec_code == futures.sec then
+            if item.class_code == futures.class and item.sec_code == futures.sec
+                and item.datetime.day == os.date("*t").day  then
+
                 if bit.band( item.flags, 4) ~= 0 then   -- это продажа?
                     qty     = qty - item.qty
                     summ    = summ + item.qty*item.price - item.qty*sellComission

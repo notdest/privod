@@ -49,6 +49,7 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
         morningPos      = getMorningPos()
         controlTable    = control:new(colors)
         metricsTable    = metrics:new(colors)
+        entrances       = getEntrances()
     end
 
     function OnStop()

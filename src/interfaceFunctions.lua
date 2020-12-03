@@ -158,9 +158,9 @@
 
     function getEntrances()
         local qty       = morningPos
-        local lastZero  = 0
+        local lastZero  = -1
 
-        for i = 0,getNumberOf('trades') - 1 do
+        for i = 0,getNumberOf('trades') - 1 do                      -- вычисляем индекс последнего нуля
             item    = getItem('trades',i)
 
             if item.class_code == futures.class and item.sec_code == futures.sec then
@@ -176,15 +176,15 @@
             end
         end
 
-        if( lastZero >= (getNumberOf('trades') - 1)) then
+        if( lastZero >= (getNumberOf('trades') - 1)) then           -- если мы в нуле, то выходим
             return {}
         end
 
-        item    = getItem('trades',lastZero +1)
+        item    = getItem('trades',lastZero +1)                     -- определяем, мы в шорте или в лонге
         local globalDirection = (bit.band( item.flags, 4) ~= 0)
         local localDirection  = false
 
-        local movements = {}
+        local movements = {}                                        -- делаем "массив движений" - одна ячейка это один контракт по указанной цене
         for i=lastZero+1 ,getNumberOf('trades') - 1 do
             item    = getItem('trades',i)
             localDirection  = (bit.band( item.flags, 4) ~= 0)
@@ -203,7 +203,7 @@
         local hash  = {}
         local res   = {}
 
-        for _,v in ipairs(movements) do
+        for _,v in ipairs(movements) do                             -- переводим "массив движений" в массив цен входа
            if (not hash[v]) then
                res[#res+1] = v
                hash[v] = true

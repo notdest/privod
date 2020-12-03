@@ -266,6 +266,7 @@ function metrics:printQuotes2()
 
 
     if tonumber(quotes.bid_count) > 0 then
+        local summ = 0
         for k, v in pairs(quotes.bid) do
             local index = endValue - math.floor(v.price * 100)
             if index >= 1 and index <= rowsCount then
@@ -275,10 +276,19 @@ function metrics:printQuotes2()
                 self:color(index, 8, color)
                 self:color(index, 9, color)
             end
+
+            summ = summ + tonumber(v.quantity)
+        end
+
+        local index = endValue - math.floor(quotes.bid[1].price*100)+1
+        if index >= 1 and index <= rowsCount then
+            SetCell(self.tableId,  index, 8,string.format("*%d", summ))
+            self:color(index, 8, self.colors.green.heavy)
         end
     end
 
     if tonumber(quotes.offer_count) > 0 then
+        local summ = 0
         for k, v in pairs(quotes.offer) do
             index   = endValue - math.floor(v.price * 100)
             if index >= 1 and index <= rowsCount then
@@ -288,6 +298,14 @@ function metrics:printQuotes2()
                 self:color(index, 10, color)
                 self:color(index,  9, color)
             end
+
+            summ = summ + tonumber(v.quantity)
+        end
+
+        local index = endValue - math.floor(quotes.offer[math.floor(quotes.offer_count)].price*100)-1
+        if index >= 1 and index <= rowsCount then
+            SetCell(self.tableId,  index, 10, string.format("%d*", summ) )
+            self:color(index, 10, self.colors.red.heavy)
         end
     end
 

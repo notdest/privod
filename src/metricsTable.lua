@@ -96,9 +96,7 @@ function metrics:handleEvent(t_id, msg, row, col)
         elseif col == 83 then                                                   -- "s", продажа по рынку
             sellFuturesMarket()
         elseif col == 65 then                                                   -- "a", заявка покупка над стаканом
-            local quotes = getQuoteLevel2 ( futures.class , futures.sec)
-            exitPrice    = quotes.bid[ math.floor(quotes.bid_count) ].price + 1
-            buyLimit(futures.class , futures.sec ,workingVolume, math.floor(exitPrice))
+            buyFuturesSpread()
         elseif col == 68 then                                                   -- "d", заявка продажа под стаканом
             sellFuturesSpread()
 
@@ -153,8 +151,26 @@ function metrics:handleEvent(t_id, msg, row, col)
     end
 end
 
+function metrics:sharesTrade(trade)
+    local row   = self:shareIndex(trade.price)
+    if bit.band( trade.flags, 1) ~= 0 then
+        self:addTrade(trade,row,7,share.volume)
+    else
+        self:addTrade(trade,row,6,share.volume)
+    end
+end
 
-function metrics:addTrade( trade,row,col,volumes )
+function metrics:futuresTrade(trade)
+    local row   = middle + math.floor(rowsCount/2) - trade.price
+    if bit.band( trade.flags, 1) ~= 0 then
+        self:addTrade(trade,row,2,futures.volume )
+    else
+        self:addTrade(trade,row,1,futures.volume)
+    end
+end
+
+
+function metrics:addTrade( trade,row,col,volumes )          -- мы тут избыточно передаем сделку
     if row >= 1 and row <= rowsCount then
         local oldVal = GetCell(self.tableId,row,col)
         local color, qty
@@ -250,7 +266,7 @@ end
 
 function metrics:printQuotes2()
     quotes          = getQuoteLevel2 ( share.class , share.sec)
-    endValue        = middle + math.floor(rowsCount/2) - contango
+    endValue        = math.floor(middle + math.floor(rowsCount/2) - contango + 0.5)
 
     
 
@@ -268,7 +284,7 @@ function metrics:printQuotes2()
     if tonumber(quotes.bid_count) > 0 then
         local summ = 0
         for k, v in pairs(quotes.bid) do
-            local index = endValue - math.floor(v.price * 100)
+            local index = self:shareIndex( v.price )
             if index >= 1 and index <= rowsCount then
                 local color = self:chooseColor(self.colors.green, share.volume, v.quantity)
 
@@ -280,7 +296,7 @@ function metrics:printQuotes2()
             summ = summ + tonumber(v.quantity)
         end
 
-        local index = endValue - math.floor(quotes.bid[1].price*100)+1
+        local index =  self:shareIndex( quotes.bid[1].price ) + 1
         if index >= 1 and index <= rowsCount then
             SetCell(self.tableId,  index, 8,string.format("*%d", summ))
             self:color(index, 8, self.colors.green.heavy)
@@ -290,7 +306,7 @@ function metrics:printQuotes2()
     if tonumber(quotes.offer_count) > 0 then
         local summ = 0
         for k, v in pairs(quotes.offer) do
-            index   = endValue - math.floor(v.price * 100)
+            index   = self:shareIndex( v.price )
             if index >= 1 and index <= rowsCount then
                 local color = self:chooseColor(self.colors.red, share.volume, v.quantity)
 
@@ -302,7 +318,7 @@ function metrics:printQuotes2()
             summ = summ + tonumber(v.quantity)
         end
 
-        local index = endValue - math.floor(quotes.offer[math.floor(quotes.offer_count)].price*100)-1
+        local index = self:shareIndex( quotes.offer[math.floor(quotes.offer_count)].price ) - 1
         if index >= 1 and index <= rowsCount then
             SetCell(self.tableId,  index, 10, string.format("%d*", summ) )
             self:color(index, 10, self.colors.red.heavy)
@@ -311,7 +327,7 @@ function metrics:printQuotes2()
 
 
     if robotEnterUp ~= 0 then
-        local index     = endValue - math.floor(robotEnterUp * 100)
+        local index     =  self:shareIndex( robotEnterUp )
         local endIndex  = index - 10
 
         index       = math.min(index, rowsCount)
@@ -323,7 +339,7 @@ function metrics:printQuotes2()
     end
 
     if robotEnterDown ~= 0 then
-        local index     = endValue - math.floor(robotEnterDown * 100)
+        local index     = self:shareIndex( robotEnterDown )
         local endIndex  = index + 10
 
         index       = math.max(index, 1)
@@ -396,6 +412,11 @@ function metrics:close()
 end
 
 -------------------------------------дальше типо приватные методы
+
+function metrics:shareIndex( price )
+    local endValue = middle + math.floor(rowsCount/2) - contango
+    return math.floor( endValue - price*100 + 0.5)
+end
 
 function metrics:defaultColor(row,col)
     SetColor(self.tableId, row, col, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR, QTABLE_DEFAULT_COLOR)

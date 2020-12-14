@@ -150,30 +150,11 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
 
     function OnAllTrade( trade )                                                            -- Прилетела обезличенная сделка
         if     trade.class_code == futures.class and trade.sec_code == futures.sec then
-
-
-            local row   = middle + math.floor(rowsCount/2) - trade.price            -- Вот здесь мы слишком много знаем, лучше это спрятать в класс таблицы
-            if bit.band( trade.flags, 1) ~= 0 then
-                metricsTable:addTrade(trade,row,2,futures.volume )
-            else
-                metricsTable:addTrade(trade,row,1,futures.volume)
-            end
-
-
+            metricsTable:futuresTrade(trade)
         elseif trade.class_code == share.class   and trade.sec_code == share.sec then
             sharePriceReached(trade.price)
-
-
-            local row   = middle + math.floor(rowsCount/2 - trade.price * 100) - contango
-            if bit.band( trade.flags, 1) ~= 0 then                                  -- Вот здесь мы слишком много знаем, лучше это спрятать в класс таблицы
-                metricsTable:addTrade(trade,row,7,share.volume)
-                controlTable:addTradeToControl(trade,5,5,share.volume)
-            else
-                metricsTable:addTrade(trade,row,6,share.volume)
-                controlTable:addTradeToControl(trade,6,5,share.volume)
-            end
-
-
+            metricsTable:sharesTrade(trade)
+            controlTable:addTrade(trade)
         end
     end
 

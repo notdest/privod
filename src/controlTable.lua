@@ -73,7 +73,15 @@ function control:handleEvent(t_id, msg, row, col)
 end
 
 -- Потом надо уменьшить количество входных параметров
-function control:addTradeToControl( trade,row,col,volumes )
+function control:addTrade( trade,volumes )
+    local col       = 5
+    local volumes   = share.volume
+
+    local row       = 6
+    if bit.band( trade.flags, 1) ~= 0 then
+        row = 5
+    end
+
     local oldVal = GetCell(self.tableId,row,col)
     local color, qty
 

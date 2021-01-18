@@ -68,6 +68,21 @@
         controlTable:setExitPrice(exitPrice)
     end
 
+    function setFuturesStop( price )
+        if lastStopId ~= 0 then
+            dropFuturesStop()
+        end
+
+        if      curPos > 0 then
+            sellStop(futures.class , futures.sec, math.abs(curPos), price - 50, price)
+            metricsTable:setStop( price, -1 )
+        elseif  curPos < 0 then
+            buyStop( futures.class , futures.sec, math.abs(curPos), price + 50, price)
+            metricsTable:setStop( price, 1 )
+        end
+
+    end
+
     function dropFuturesLimit()
         dropLimit(futures.class,futures.assets)
     end
@@ -85,11 +100,9 @@
     end
 
     function displayNoStop()
-        stopQuantity = 0
         lastStopId   = 0
-        lastStop     = 0
-        lastRealStop = 0
-        controlTable:setStop(stopQuantity)
+        metricsTable:setStop( 0, 0 )
+        controlTable:setStop(0)
     end
 
     function calculateProfit()

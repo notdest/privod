@@ -5,7 +5,11 @@ metrics = {}
 function metrics:new(colrs)
     newObj = {
         colors  = colrs,
-        tableId = nil
+        tableId = nil,
+        stop    = {
+            price       = 0,
+            direction   = 0
+        }
     }
 
     self.__index = self
@@ -20,9 +24,8 @@ function metrics:handleEvent(t_id, msg, row, col)
             buyLimit(futures.class , futures.sec ,workingVolume, exitPrice)
             controlTable:setExitPrice(exitPrice)
         elseif col == 4 then
-            if lastStopId == 0 then
-                lastStop  = middle + math.floor(rowsCount/2) - row
-            end
+            setFuturesStop(middle + math.floor(rowsCount/2) - row)
+
         elseif col == 5 then
             exitPrice = middle + math.floor(rowsCount/2) - row
             sellLimit(futures.class , futures.sec ,workingVolume, exitPrice)
@@ -48,8 +51,8 @@ function metrics:handleEvent(t_id, msg, row, col)
             if     exitPrice == priceOfClick then
                 dropLimit(futures.class,futures.assets)
 
-            elseif (priceOfClick >= lastStop and priceOfClick <= lastRealStop)
-                or (priceOfClick <= lastStop and priceOfClick >= lastRealStop) then
+            elseif (priceOfClick >= self.stop.price and priceOfClick <= (self.stop.price + self.stop.direction*10))
+                or (priceOfClick <= self.stop.price and priceOfClick >= (self.stop.price + self.stop.direction*10)) then
 
                 dropFuturesStop()
             end
@@ -71,21 +74,6 @@ function metrics:handleEvent(t_id, msg, row, col)
                 mark.sell = 0
             else
                 mark.sell = 0
-            end
-        end
-
-    elseif msg == QTABLE_LBUTTONUP then
-        if col == 4 then
-            if lastStopId == 0 then
-                lastRealStop = middle + math.floor(rowsCount/2) - row
-                if     lastRealStop > lastStop then
-                    buyStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
-                elseif lastRealStop < lastStop then
-                    sellStop(futures.class , futures.sec, math.abs(curPos), lastRealStop, lastStop)
-                else
-                    lastRealStop = 0
-                    lastStop     = 0
-                end
             end
         end
     elseif msg == QTABLE_VKEY then                                                      -- Всякие клавиши
@@ -194,6 +182,11 @@ function metrics:addTrade( trade,row,col,volumes )          -- мы тут избыточно 
     end
 end
 
+function metrics:setStop( price,direction )
+    self.stop.price     = price
+    self.stop.direction = direction
+end
+
 
 function metrics:printQuotes()
     quotes           = getQuoteLevel2 ( futures.class , futures.sec)
@@ -247,11 +240,14 @@ function metrics:printQuotes()
         self:color(markIndex.sell, 5, RGB(177, 195, 59))
     end
 
-    local stopIndexLow  = endValue - math.max(lastStop, lastRealStop)                       -- подсвечиваем стоп
-    local stopIndexHigh = endValue - math.min(lastStop, lastRealStop)
-    if stopIndexLow > 0 and stopIndexLow <= rowsCount and stopIndexHigh > 0 and stopIndexHigh <= rowsCount then
+    if self.stop.direction ~= 0 then                                                        -- подсвечиваем стоп
+        local stopIndexLow  = endValue - math.max(self.stop.price, self.stop.price + self.stop.direction*10)
+        local stopIndexHigh = endValue - math.min(self.stop.price, self.stop.price + self.stop.direction*10)
+
         for i = stopIndexLow, stopIndexHigh do
-            self:color(i, 4, RGB(165, 0, 200))
+            if i > 0 and i <= rowsCount then           -- лучше вынести из цикла в вычисление границ
+                self:color(i, 4, RGB(165, 0, 200))
+            end
         end
     end
 

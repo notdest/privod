@@ -20,9 +20,6 @@ dofile (getScriptPath() .. "\\src\\controlTable.lua")
 dofile (getScriptPath() .. "\\src\\metricsTable.lua")
 
 
-lastStop        = 0
-lastRealStop    = 0
-stopQuantity    = 0
 lastStopId      = 0
 
 middle          = 0
@@ -59,7 +56,7 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
     end
 
     function OnStopOrder(order)
-        if bit.band( order.flags, 1) == 0 then
+        if bit.band( order.flags, 1) == 0 and lastStopId == order.order_num then
             displayNoStop()
         end
     end
@@ -110,9 +107,8 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
     function OnTransReply(reply)
         if reply.status == 3 then
             if reply.trans_id == 108 then       -- стопы с таким id, надо заменить на константы
-                stopQuantity = reply.quantity
                 lastStopId   = reply.order_num
-                controlTable:setStop(stopQuantity)
+                controlTable:setStop(reply.quantity)
             end
         end
     end

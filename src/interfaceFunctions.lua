@@ -106,7 +106,7 @@
     end
 
     function calculateProfit()
-        controlTable:setProfit(getProfit(1.99,0.5))
+        controlTable:setProfit(getProfit(2.48,0.5))
     end
 
     function getProfit( buyCommission,sellComission )

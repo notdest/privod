@@ -93,6 +93,23 @@ function metrics:handleEvent(t_id, msg, row, col)
         elseif col == 40 then                                                   -- стрелка вниз,  прокрутить вниз
             setMiddle(middle - 15)
 
+        elseif col == 81 then                                                   -- 'q' выход и стоп +/- 20 пунктов
+
+            if #entrances > 0 then
+                if curPos > 0 then
+                    exitPrice    = math.floor(entrances[1]+23 +0.5)
+                    sellLimit(futures.class , futures.sec ,math.abs(curPos), exitPrice)
+                    controlTable:setExitPrice(exitPrice)
+                    setFuturesStop(math.floor(entrances[1]-11+ 0.5))
+                elseif curPos < 0 then
+                    exitPrice    = math.floor(entrances[1]-23 + 0.5)
+                    buyLimit(futures.class , futures.sec ,math.abs(curPos), exitPrice)
+                    controlTable:setExitPrice(exitPrice)
+                    setFuturesStop(math.floor(entrances[1]+11+ 0.5))
+                end
+            end
+
+
 
         elseif col == 96 then                                                   -- нуль на панели слева, отцентрировать стакан
             center()

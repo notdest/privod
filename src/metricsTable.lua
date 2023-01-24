@@ -220,26 +220,30 @@ function metrics:printQuotes()
         self:defaultColor(i, 5)
     end
 
-    for k, v in pairs(quotes.bid) do -- —боит иногда, нужно условие
-        local index = endValue - v.price
-        if index >= 1 and index <= rowsCount then
-            local color = self:chooseColor(self.colors.green, futures.volume, v.quantity)
+    if quotes.bid ~= nil and quotes.bid ~= "" then
+        for k, v in pairs(quotes.bid) do
+            local index = endValue - v.price
+            if index >= 1 and index <= rowsCount then
+                local color = self:chooseColor(self.colors.green, futures.volume, v.quantity)
 
-            SetCell(self.tableId,  index, 3, tostring( v.quantity) )
-            self:color(index, 3, color)
-            self:color(index, 4, color)
+                SetCell(self.tableId,  index, 3, tostring( v.quantity) )
+                self:color(index, 3, color)
+                self:color(index, 4, color)
+            end
         end
     end
 
-    for k, v in pairs(quotes.offer) do
-        index   = endValue - v.price
-        if index >= 1 and index <= rowsCount then
-            local color = self:chooseColor(self.colors.red, futures.volume, v.quantity)
+    if quotes.offer ~= nil and quotes.offer ~= "" then
+        for k, v in pairs(quotes.offer) do
+            index   = endValue - v.price
+            if index >= 1 and index <= rowsCount then
+                local color = self:chooseColor(self.colors.red, futures.volume, v.quantity)
 
-            SetCell(self.tableId,  index, 5, tostring( v.quantity) )
+                SetCell(self.tableId,  index, 5, tostring( v.quantity) )
 
-            self:color(index, 5, color)
-            self:color(index, 4, color)
+                self:color(index, 5, color)
+                self:color(index, 4, color)
+            end
         end
     end
 

@@ -57,7 +57,7 @@ function metrics:handleEvent(t_id, msg, row, col)
                 dropFuturesStop()
             end
 
-        elseif col == 3 then                -- ñòàâèì ìåòêó â ïîêóïêàõ
+        elseif col == 3 then                -- ÑÑ‚Ð°Ð²Ð¸Ð¼ Ð¼ÐµÑ‚ÐºÑƒ Ð² Ð¿Ð¾ÐºÑƒÐ¿ÐºÐ°Ñ…
             if mark.buy == 0 then
                 mark.buy = priceOfClick
             elseif mark.sell ~= 0 then
@@ -66,7 +66,7 @@ function metrics:handleEvent(t_id, msg, row, col)
             else
                 mark.buy = 0
             end
-        elseif col == 5 then                -- ñòàâèì ìåòêó â ïðîäàæàõ
+        elseif col == 5 then                -- ÑÑ‚Ð°Ð²Ð¸Ð¼ Ð¼ÐµÑ‚ÐºÑƒ Ð² Ð¿Ñ€Ð¾Ð´Ð°Ð¶Ð°Ñ…
             if mark.sell == 0 then
                 mark.sell = priceOfClick
             elseif mark.buy ~= 0 then
@@ -76,24 +76,24 @@ function metrics:handleEvent(t_id, msg, row, col)
                 mark.sell = 0
             end
         end
-    elseif msg == QTABLE_VKEY then                                                      -- Âñÿêèå êëàâèøè
+    elseif msg == QTABLE_VKEY then                                                      -- Ð’ÑÑÐºÐ¸Ðµ ÐºÐ»Ð°Ð²Ð¸ÑˆÐ¸
 
 
-        if     col == 87 then                                                   -- "w", ïîêóïêà ïî ðûíêó
+        if     col == 87 then                                                   -- "w", Ð¿Ð¾ÐºÑƒÐ¿ÐºÐ° Ð¿Ð¾ Ñ€Ñ‹Ð½ÐºÑƒ
             buyFuturesMarket()
-        elseif col == 83 then                                                   -- "s", ïðîäàæà ïî ðûíêó
+        elseif col == 83 then                                                   -- "s", Ð¿Ñ€Ð¾Ð´Ð°Ð¶Ð° Ð¿Ð¾ Ñ€Ñ‹Ð½ÐºÑƒ
             sellFuturesMarket()
-        elseif col == 65 then                                                   -- "a", çàÿâêà ïîêóïêà íàä ñòàêàíîì
+        elseif col == 65 then                                                   -- "a", Ð·Ð°ÑÐ²ÐºÐ° Ð¿Ð¾ÐºÑƒÐ¿ÐºÐ° Ð½Ð°Ð´ ÑÑ‚Ð°ÐºÐ°Ð½Ð¾Ð¼
             buyFuturesSpread()
-        elseif col == 68 then                                                   -- "d", çàÿâêà ïðîäàæà ïîä ñòàêàíîì
+        elseif col == 68 then                                                   -- "d", Ð·Ð°ÑÐ²ÐºÐ° Ð¿Ñ€Ð¾Ð´Ð°Ð¶Ð° Ð¿Ð¾Ð´ ÑÑ‚Ð°ÐºÐ°Ð½Ð¾Ð¼
             sellFuturesSpread()
 
-        elseif col == 38 then                                                   -- ñòðåëêà ââåðõ, ïðîêðóòèòü íàâåðõ
+        elseif col == 38 then                                                   -- ÑÑ‚Ñ€ÐµÐ»ÐºÐ° Ð²Ð²ÐµÑ€Ñ…, Ð¿Ñ€Ð¾ÐºÑ€ÑƒÑ‚Ð¸Ñ‚ÑŒ Ð½Ð°Ð²ÐµÑ€Ñ…
             setMiddle(middle + 15)
-        elseif col == 40 then                                                   -- ñòðåëêà âíèç,  ïðîêðóòèòü âíèç
+        elseif col == 40 then                                                   -- ÑÑ‚Ñ€ÐµÐ»ÐºÐ° Ð²Ð½Ð¸Ð·,  Ð¿Ñ€Ð¾ÐºÑ€ÑƒÑ‚Ð¸Ñ‚ÑŒ Ð²Ð½Ð¸Ð·
             setMiddle(middle - 15)
 
-        elseif col == 81 then                                                   -- 'q' âûõîä è ñòîï +/- 20 ïóíêòîâ
+        elseif col == 81 then                                                   -- 'q' Ð²Ñ‹Ñ…Ð¾Ð´ Ð¸ ÑÑ‚Ð¾Ð¿ +/- 20 Ð¿ÑƒÐ½ÐºÑ‚Ð¾Ð²
 
             if #entrances > 0 then
                 if curPos > 0 then
@@ -111,9 +111,9 @@ function metrics:handleEvent(t_id, msg, row, col)
 
 
 
-        elseif col == 96 then                                                   -- íóëü íà ïàíåëè ñëåâà, îòöåíòðèðîâàòü ñòàêàí
+        elseif col == 96 then                                                   -- Ð½ÑƒÐ»ÑŒ Ð½Ð° Ð¿Ð°Ð½ÐµÐ»Ð¸ ÑÐ»ÐµÐ²Ð°, Ð¾Ñ‚Ñ†ÐµÐ½Ñ‚Ñ€Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ ÑÑ‚Ð°ÐºÐ°Ð½
             center()
-        elseif col == 27 then                                                   -- esc, ñíÿòü ëèìèòêè è ñòîïû
+        elseif col == 27 then                                                   -- esc, ÑÐ½ÑÑ‚ÑŒ Ð»Ð¸Ð¼Ð¸Ñ‚ÐºÐ¸ Ð¸ ÑÑ‚Ð¾Ð¿Ñ‹
             dropFuturesStop()
             dropSharesStop()
 
@@ -123,7 +123,7 @@ function metrics:handleEvent(t_id, msg, row, col)
 
             self:printQuotes2()
             self:printQuotes()
-        elseif col == 46 then                                                   -- del, âñ¸ ñíÿòü, âñþäó âûéòè
+        elseif col == 46 then                                                   -- del, Ð²ÑÑ‘ ÑÐ½ÑÑ‚ÑŒ, Ð²ÑÑŽÐ´Ñƒ Ð²Ñ‹Ð¹Ñ‚Ð¸
             dropFuturesStop()
             dropSharesStop()
 
@@ -141,15 +141,15 @@ function metrics:handleEvent(t_id, msg, row, col)
             self:printQuotes()
 
 
-        elseif col == 49 then                                                   -- 1, óñòàíîâèòü îáúåì
+        elseif col == 49 then                                                   -- 1, ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐ¼
             setWorkingVolume( 1 )
-        elseif col == 50 then                                                   -- 2, óñòàíîâèòü îáúåì
+        elseif col == 50 then                                                   -- 2, ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐ¼
             setWorkingVolume( 2 )
-        elseif col == 51 then                                                   -- 3, óñòàíîâèòü îáúåì
+        elseif col == 51 then                                                   -- 3, ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐ¼
             setWorkingVolume( 5 )
-        elseif col == 52 then                                                   -- 4, óñòàíîâèòü îáúåì
+        elseif col == 52 then                                                   -- 4, ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐ¼
             setWorkingVolume( 10 )
-        elseif col == 53 then                                                   -- 5, óñòàíîâèòü îáúåì
+        elseif col == 53 then                                                   -- 5, ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐ¼
             setWorkingVolume( 15 )
         end
 
@@ -175,12 +175,12 @@ function metrics:futuresTrade(trade)
 end
 
 
-function metrics:addTrade( trade,row,col,volumes )          -- ìû òóò èçáûòî÷íî ïåðåäàåì ñäåëêó
+function metrics:addTrade( trade,row,col,volumes )          -- Ð¼Ñ‹ Ñ‚ÑƒÑ‚ Ð¸Ð·Ð±Ñ‹Ñ‚Ð¾Ñ‡Ð½Ð¾ Ð¿ÐµÑ€ÐµÐ´Ð°ÐµÐ¼ ÑÐ´ÐµÐ»ÐºÑƒ
     if row >= 1 and row <= rowsCount then
         local oldVal = GetCell(self.tableId,row,col)
         local color, qty
 
-            if oldVal.image == "" then  -- oldVal çäåñü ïîñòîÿííî nil
+            if oldVal.image == "" then  -- oldVal Ð·Ð´ÐµÑÑŒ Ð¿Ð¾ÑÑ‚Ð¾ÑÐ½Ð½Ð¾ nil
                 qty = trade.qty
             else
                 qty = tonumber(oldVal.image) + trade.qty
@@ -210,7 +210,7 @@ function metrics:printQuotes()
     endValue         = middle + math.floor(rowsCount/2)
     
 
-    for i = 1, rowsCount do                                 -- âûâîäèì ëèíåéêó ó ôüþ÷à è î÷èùàåì åãî
+    for i = 1, rowsCount do                                 -- Ð²Ñ‹Ð²Ð¾Ð´Ð¸Ð¼ Ð»Ð¸Ð½ÐµÐ¹ÐºÑƒ Ñƒ Ñ„ÑŒÑŽÑ‡Ð° Ð¸ Ð¾Ñ‡Ð¸Ñ‰Ð°ÐµÐ¼ ÐµÐ³Ð¾
         SetCell(self.tableId, i, 4, tostring( endValue - i) )
         SetCell(self.tableId, i, 3, '' )
         SetCell(self.tableId, i, 5, '' )
@@ -220,40 +220,36 @@ function metrics:printQuotes()
         self:defaultColor(i, 5)
     end
 
-    if quotes.bid ~= nil and quotes.bid ~= "" then
-        for k, v in pairs(quotes.bid) do
-            local index = endValue - v.price
-            if index >= 1 and index <= rowsCount then
-                local color = self:chooseColor(self.colors.green, futures.volume, v.quantity)
+    for k, v in pairs(quotes.bid) do -- Ð¡Ð±Ð¾Ð¸Ñ‚ Ð¸Ð½Ð¾Ð³Ð´Ð°, Ð½ÑƒÐ¶Ð½Ð¾ ÑƒÑÐ»Ð¾Ð²Ð¸Ðµ
+        local index = endValue - v.price
+        if index >= 1 and index <= rowsCount then
+            local color = self:chooseColor(self.colors.green, futures.volume, v.quantity)
 
-                SetCell(self.tableId,  index, 3, tostring( v.quantity) )
-                self:color(index, 3, color)
-                self:color(index, 4, color)
-            end
+            SetCell(self.tableId,  index, 3, tostring( v.quantity) )
+            self:color(index, 3, color)
+            self:color(index, 4, color)
         end
     end
 
-    if quotes.offer ~= nil and quotes.offer ~= "" then
-        for k, v in pairs(quotes.offer) do
-            index   = endValue - v.price
-            if index >= 1 and index <= rowsCount then
-                local color = self:chooseColor(self.colors.red, futures.volume, v.quantity)
+    for k, v in pairs(quotes.offer) do
+        index   = endValue - v.price
+        if index >= 1 and index <= rowsCount then
+            local color = self:chooseColor(self.colors.red, futures.volume, v.quantity)
 
-                SetCell(self.tableId,  index, 5, tostring( v.quantity) )
+            SetCell(self.tableId,  index, 5, tostring( v.quantity) )
 
-                self:color(index, 5, color)
-                self:color(index, 4, color)
-            end
+            self:color(index, 5, color)
+            self:color(index, 4, color)
         end
     end
 
 
     local exitIndex = endValue - exitPrice
-    if exitIndex > 0 and exitIndex <= rowsCount then                                        -- ïîäñâå÷èâàåì âûõîä
+    if exitIndex > 0 and exitIndex <= rowsCount then                                        -- Ð¿Ð¾Ð´ÑÐ²ÐµÑ‡Ð¸Ð²Ð°ÐµÐ¼ Ð²Ñ‹Ñ…Ð¾Ð´
         self:color(exitIndex, 4, RGB(0, 219, 216))
     end
 
-    local markIndex = {buy = endValue - mark.buy , sell = endValue - mark.sell}             -- ïîäñâå÷èâàåì ïîìåòêè
+    local markIndex = {buy = endValue - mark.buy , sell = endValue - mark.sell}             -- Ð¿Ð¾Ð´ÑÐ²ÐµÑ‡Ð¸Ð²Ð°ÐµÐ¼ Ð¿Ð¾Ð¼ÐµÑ‚ÐºÐ¸
     if markIndex.buy > 0 and markIndex.buy <= rowsCount then
         self:color(markIndex.buy, 3, RGB(177, 195, 59))
     end
@@ -261,12 +257,12 @@ function metrics:printQuotes()
         self:color(markIndex.sell, 5, RGB(177, 195, 59))
     end
 
-    if self.stop.direction ~= 0 then                                                        -- ïîäñâå÷èâàåì ñòîï
+    if self.stop.direction ~= 0 then                                                        -- Ð¿Ð¾Ð´ÑÐ²ÐµÑ‡Ð¸Ð²Ð°ÐµÐ¼ ÑÑ‚Ð¾Ð¿
         local stopIndexLow  = endValue - math.max(self.stop.price, self.stop.price + self.stop.direction*10)
         local stopIndexHigh = endValue - math.min(self.stop.price, self.stop.price + self.stop.direction*10)
 
         for i = stopIndexLow, stopIndexHigh do
-            if i > 0 and i <= rowsCount then           -- ëó÷øå âûíåñòè èç öèêëà â âû÷èñëåíèå ãðàíèö
+            if i > 0 and i <= rowsCount then           -- Ð»ÑƒÑ‡ÑˆÐµ Ð²Ñ‹Ð½ÐµÑÑ‚Ð¸ Ð¸Ð· Ñ†Ð¸ÐºÐ»Ð° Ð² Ð²Ñ‹Ñ‡Ð¸ÑÐ»ÐµÐ½Ð¸Ðµ Ð³Ñ€Ð°Ð½Ð¸Ñ†
                 self:color(i, 4, RGB(165, 0, 200))
             end
         end
@@ -287,7 +283,7 @@ function metrics:printQuotes2()
 
     
 
-    for i = 1, rowsCount do                                 -- âûâîäèì ëèíåéêó ó àêöèè è î÷èùàåì åãî
+    for i = 1, rowsCount do                                 -- Ð²Ñ‹Ð²Ð¾Ð´Ð¸Ð¼ Ð»Ð¸Ð½ÐµÐ¹ÐºÑƒ Ñƒ Ð°ÐºÑ†Ð¸Ð¸ Ð¸ Ð¾Ñ‡Ð¸Ñ‰Ð°ÐµÐ¼ ÐµÐ³Ð¾
         SetCell(self.tableId, i, 9, string.format("%01.2f", (endValue - i)/100 ) )
         SetCell(self.tableId, i, 8, '' )
         SetCell(self.tableId, i, 10, '' )
@@ -384,25 +380,25 @@ end
 
 
 function metrics:init()
-	self.tableId = AllocTable()                                                            -- Ñîçäàåì òàáëèöó ñ ñòàêàíîì
-    AddColumn(self.tableId, 1, "ïîê",      true, QTABLE_INT_TYPE, 7)
-    AddColumn(self.tableId, 2, "ïðîä",     true, QTABLE_INT_TYPE, 7)
+	self.tableId = AllocTable()                                                            -- Ð¡Ð¾Ð·Ð´Ð°ÐµÐ¼ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñƒ Ñ ÑÑ‚Ð°ÐºÐ°Ð½Ð¾Ð¼
+    AddColumn(self.tableId, 1, "Ð¿Ð¾Ðº",      true, QTABLE_INT_TYPE, 7)
+    AddColumn(self.tableId, 2, "Ð¿Ñ€Ð¾Ð´",     true, QTABLE_INT_TYPE, 7)
     AddColumn(self.tableId, 3, "",         true, QTABLE_INT_TYPE, 8)
-    AddColumn(self.tableId, 4, "Ôüþ÷åðñ",  true, QTABLE_INT_TYPE, 10)
+    AddColumn(self.tableId, 4, "Ð¤ÑŒÑŽÑ‡ÐµÑ€Ñ",  true, QTABLE_INT_TYPE, 10)
     AddColumn(self.tableId, 5, "",         true, QTABLE_INT_TYPE, 8)
-    AddColumn(self.tableId, 6, "ïîê",      true, QTABLE_INT_TYPE, 7)
-    AddColumn(self.tableId, 7, "ïðîä",     true, QTABLE_INT_TYPE, 7)
+    AddColumn(self.tableId, 6, "Ð¿Ð¾Ðº",      true, QTABLE_INT_TYPE, 7)
+    AddColumn(self.tableId, 7, "Ð¿Ñ€Ð¾Ð´",     true, QTABLE_INT_TYPE, 7)
     AddColumn(self.tableId, 8, "",         true, QTABLE_INT_TYPE, 8)
-    AddColumn(self.tableId, 9, "Àêöèÿ",    true, QTABLE_INT_TYPE, 10)
+    AddColumn(self.tableId, 9, "ÐÐºÑ†Ð¸Ñ",    true, QTABLE_INT_TYPE, 10)
     AddColumn(self.tableId, 10, "",        true, QTABLE_INT_TYPE, 8)
     CreateWindow(self.tableId)
 
 
-    for i = 1, rowsCount do 		-- TODO: âûïèëèòü rowsCount
+    for i = 1, rowsCount do 		-- TODO: Ð²Ñ‹Ð¿Ð¸Ð»Ð¸Ñ‚ÑŒ rowsCount
         InsertRow(self.tableId, -1)
     end
 
-    SetWindowCaption(self.tableId, "Ñòàêàíû")
+    SetWindowCaption(self.tableId, "Ð¡Ñ‚Ð°ÐºÐ°Ð½Ñ‹")
     SetTableNotificationCallback(self.tableId,
         function (t_id, msg, row, col)
             self:handleEvent(t_id, msg, row, col)
@@ -428,7 +424,7 @@ function metrics:close()
     end
 end
 
--------------------------------------äàëüøå òèïî ïðèâàòíûå ìåòîäû
+-------------------------------------Ð´Ð°Ð»ÑŒÑˆÐµ Ñ‚Ð¸Ð¿Ð¾ Ð¿Ñ€Ð¸Ð²Ð°Ñ‚Ð½Ñ‹Ðµ Ð¼ÐµÑ‚Ð¾Ð´Ñ‹
 
 function metrics:shareIndex( price )
     local endValue = middle + math.floor(rowsCount/2) - contango

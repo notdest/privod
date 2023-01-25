@@ -7,7 +7,7 @@
 
 
 
-    -- Отцентрировать отображение стаканов по фьючерсу
+    -- РћС‚С†РµРЅС‚СЂРёСЂРѕРІР°С‚СЊ РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ СЃС‚Р°РєР°РЅРѕРІ РїРѕ С„СЊСЋС‡РµСЂСЃСѓ
     function center()
         local quotes        = getQuoteLevel2 ( futures.class , futures.sec)
         local bidCount      = math.floor(quotes.bid_count)
@@ -121,7 +121,7 @@
             if item.class_code == futures.class and item.sec_code == futures.sec
                 and item.datetime.day == os.date("*t").day  then
 
-                if bit.band( item.flags, 4) ~= 0 then   -- это продажа?
+                if bit.band( item.flags, 4) ~= 0 then   -- СЌС‚Рѕ РїСЂРѕРґР°Р¶Р°?
                     qty     = qty - item.qty
                     summ    = summ + item.qty*item.price - item.qty*sellComission
                 else    
@@ -143,19 +143,15 @@
         return profit
     end
 
-    -- позицию на начало сесси вычисляем как разность количество бумаг по сделкам и текущей позиции
+    -- РїРѕР·РёС†РёСЋ РЅР° РЅР°С‡Р°Р»Рѕ СЃРµСЃСЃРё РІС‹С‡РёСЃР»СЏРµРј РєР°Рє СЂР°Р·РЅРѕСЃС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ Р±СѓРјР°Рі РїРѕ СЃРґРµР»РєР°Рј Рё С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё
     function getMorningPos()
-        if firmId == "" then
-            return 0
-        end
-
         local qty       = 0
 
         for i = 0,getNumberOf('trades') - 1 do
             item    = getItem('trades',i)
 
             if item.class_code == futures.class and item.sec_code == futures.sec then
-                if bit.band( item.flags, 4) ~= 0 then   -- это продажа?
+                if bit.band( item.flags, 4) ~= 0 then   -- СЌС‚Рѕ РїСЂРѕРґР°Р¶Р°?
                     qty     = qty - item.qty
                 else
                     qty     = qty + item.qty
@@ -177,11 +173,11 @@
         local qty       = morningPos
         local lastZero  = -1
 
-        for i = 0,getNumberOf('trades') - 1 do                      -- вычисляем индекс последнего нуля
+        for i = 0,getNumberOf('trades') - 1 do                      -- РІС‹С‡РёСЃР»СЏРµРј РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ РЅСѓР»СЏ
             item    = getItem('trades',i)
 
             if item.class_code == futures.class and item.sec_code == futures.sec then
-                if bit.band( item.flags, 4) ~= 0 then   -- это продажа?
+                if bit.band( item.flags, 4) ~= 0 then   -- СЌС‚Рѕ РїСЂРѕРґР°Р¶Р°?
                     qty     = qty - item.qty
                 else    
                     qty     = qty + item.qty
@@ -193,15 +189,15 @@
             end
         end
 
-        if( lastZero >= (getNumberOf('trades') - 1)) then           -- если мы в нуле, то выходим
+        if( lastZero >= (getNumberOf('trades') - 1)) then           -- РµСЃР»Рё РјС‹ РІ РЅСѓР»Рµ, С‚Рѕ РІС‹С…РѕРґРёРј
             return {}
         end
 
-        item    = getItem('trades',lastZero +1)                     -- определяем, мы в шорте или в лонге
+        item    = getItem('trades',lastZero +1)                     -- РѕРїСЂРµРґРµР»СЏРµРј, РјС‹ РІ С€РѕСЂС‚Рµ РёР»Рё РІ Р»РѕРЅРіРµ
         local globalDirection = (bit.band( item.flags, 4) ~= 0)
         local localDirection  = false
 
-        local movements = {}                                        -- делаем "массив движений" - одна ячейка это один контракт по указанной цене
+        local movements = {}                                        -- РґРµР»Р°РµРј "РјР°СЃСЃРёРІ РґРІРёР¶РµРЅРёР№" - РѕРґРЅР° СЏС‡РµР№РєР° СЌС‚Рѕ РѕРґРёРЅ РєРѕРЅС‚СЂР°РєС‚ РїРѕ СѓРєР°Р·Р°РЅРЅРѕР№ С†РµРЅРµ
         for i=lastZero+1 ,getNumberOf('trades') - 1 do
             item    = getItem('trades',i)
             localDirection  = (bit.band( item.flags, 4) ~= 0)
@@ -220,7 +216,7 @@
         local hash  = {}
         local res   = {}
 
-        for _,v in ipairs(movements) do                             -- переводим "массив движений" в массив цен входа
+        for _,v in ipairs(movements) do                             -- РїРµСЂРµРІРѕРґРёРј "РјР°СЃСЃРёРІ РґРІРёР¶РµРЅРёР№" РІ РјР°СЃСЃРёРІ С†РµРЅ РІС…РѕРґР°
            if (not hash[v]) then
                res[#res+1] = v
                hash[v] = true
@@ -231,13 +227,13 @@
     end
 
 
---  отладочные функции
+--  РѕС‚Р»Р°РґРѕС‡РЅС‹Рµ С„СѓРЅРєС†РёРё
 
     function printArray( arr )
         message("      ")
         for k, v in pairs(arr) do
             if type(v) == "table" then
-                message(k..": таблица")
+                message(k..": С‚Р°Р±Р»РёС†Р°")
             else
                 message(k..": "..v)
             end

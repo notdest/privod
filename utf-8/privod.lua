@@ -1,6 +1,6 @@
 -- cp-1251 encoding, because it is windows
 
-rowsCount   = 80    -- настройки таблицы с индикаторами
+rowsCount   = 80    -- РЅР°СЃС‚СЂРѕР№РєРё С‚Р°Р±Р»РёС†С‹ СЃ РёРЅРґРёРєР°С‚РѕСЂР°РјРё
 
 updateInterval  = 300
 eraseInterval   = 60000
@@ -29,7 +29,7 @@ openBuys        = 0
 openSells       = 0
 exitPrice       = 0
 workingVolume   = 1
-morningPos      = 0     -- баланс на начало сессии, для алгоритмов на основе таблицы сделок
+morningPos      = 0     -- Р±Р°Р»Р°РЅСЃ РЅР° РЅР°С‡Р°Р»Рѕ СЃРµСЃСЃРёРё, РґР»СЏ Р°Р»РіРѕСЂРёС‚РјРѕРІ РЅР° РѕСЃРЅРѕРІРµ С‚Р°Р±Р»РёС†С‹ СЃРґРµР»РѕРє
 
 mark    = {
     buy     = 0,
@@ -61,16 +61,16 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
         end
     end
 
-    partialDeals    = {} -- сделки, где исполнена только часть
+    partialDeals    = {} -- СЃРґРµР»РєРё, РіРґРµ РёСЃРїРѕР»РЅРµРЅР° С‚РѕР»СЊРєРѕ С‡Р°СЃС‚СЊ
     function OnOrder( order)
 
-        if order.trans_id > 0 and order.balance < order.qty then                    -- Эта сделака частично исполнена
+        if order.trans_id > 0 and order.balance < order.qty then                    -- Р­С‚Р° СЃРґРµР»Р°РєР° С‡Р°СЃС‚РёС‡РЅРѕ РёСЃРїРѕР»РЅРµРЅР°
             local oldBalance = order.qty
             if partialDeals[order.ordernum] ~= nil then
                 oldBalance  = partialDeals[order.ordernum]
             end
 
-            if oldBalance - order.balance > 0 then          -- если ее исполнили сейчас
+            if oldBalance - order.balance > 0 then          -- РµСЃР»Рё РµРµ РёСЃРїРѕР»РЅРёР»Рё СЃРµР№С‡Р°СЃ
                 entrances   = getEntrances()
 
                 if order.balance > 0 and bit.band( order.flags, 1) ~= 0 then
@@ -78,7 +78,7 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
                 end
             end
 
-            if  (partialDeals[order.ordernum] ~= nil)   -- сделка исполнялась, но теперь не активна
+            if  (partialDeals[order.ordernum] ~= nil)   -- СЃРґРµР»РєР° РёСЃРїРѕР»РЅСЏР»Р°СЃСЊ, РЅРѕ С‚РµРїРµСЂСЊ РЅРµ Р°РєС‚РёРІРЅР°
                 and (order.balance == 0 or bit.band( order.flags, 1) == 0) then
                     partialDeals[order.ordernum] = nil
             end
@@ -106,7 +106,7 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
 
     function OnTransReply(reply)
         if reply.status == 3 then
-            if reply.trans_id == 108 then       -- стопы с таким id, надо заменить на константы
+            if reply.trans_id == 108 then       -- СЃС‚РѕРїС‹ СЃ С‚Р°РєРёРј id, РЅР°РґРѕ Р·Р°РјРµРЅРёС‚СЊ РЅР° РєРѕРЅСЃС‚Р°РЅС‚С‹
                 lastStopId   = reply.order_num
                 controlTable:setStop(reply.quantity)
             end
@@ -144,7 +144,7 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
 
 
 
-    function OnAllTrade( trade )                                                            -- Прилетела обезличенная сделка
+    function OnAllTrade( trade )                                                            -- РџСЂРёР»РµС‚РµР»Р° РѕР±РµР·Р»РёС‡РµРЅРЅР°СЏ СЃРґРµР»РєР°
         if     trade.class_code == futures.class and trade.sec_code == futures.sec then
             metricsTable:futuresTrade(trade)
         elseif trade.class_code == share.class   and trade.sec_code == share.sec then
@@ -181,7 +181,7 @@ dofile (getScriptPath() .. "\\src\\interfaceFunctions.lua")
             addContango( quotesF.offer[1].price - quotesS.offer[1].price*100)
         end
 
-        center()                             -- Заполняем таблицу
+        center()                             -- Р—Р°РїРѕР»РЅСЏРµРј С‚Р°Р±Р»РёС†Сѓ
         
         local lastErase = 0
         while isRun do

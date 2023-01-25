@@ -145,6 +145,10 @@
 
     -- позицию на начало сесси вычисляем как разность количество бумаг по сделкам и текущей позиции
     function getMorningPos()
+        if firmId == "" then
+            return 0
+        end
+
         local qty       = 0
 
         for i = 0,getNumberOf('trades') - 1 do
